@@ -169,6 +169,14 @@
     <ClInclude Include="..\src\Utilty\LoadShaders.h" />
     <ClInclude Include="..\src\Window\ControlWindow.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\res\shaders\DSPhong_Material.fp" />
+    <None Include="..\res\shaders\DSPhong_Material.vp" />
+    <None Include="..\res\shaders\faceid.fp" />
+    <None Include="..\res\shaders\faceid.vp" />
+    <None Include="..\res\shaders\line.fp" />
+    <None Include="..\res\shaders\line.vp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

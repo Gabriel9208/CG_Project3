@@ -64,6 +64,9 @@
     <Filter Include="Mesh">
       <UniqueIdentifier>{2f701d65-109f-4217-baa5-0f8832182c90}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{338a8273-682a-48ce-aede-241452fb2d53}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\App\App.h">
@@ -105,5 +108,25 @@
     <ClInclude Include="..\src\Utilty\Error.h">
       <Filter>Utility</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\res\shaders\DSPhong_Material.fp">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\res\shaders\DSPhong_Material.vp">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\res\shaders\faceid.fp">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\res\shaders\faceid.vp">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\res\shaders\line.fp">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\res\shaders\line.vp">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

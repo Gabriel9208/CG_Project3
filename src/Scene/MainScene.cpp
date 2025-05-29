@@ -96,7 +96,7 @@ namespace CG
 		
 
 		mesh = new MyMesh();
-		mesh->LoadFromFile("./res/models/xyzrgb_dragon_100k.obj");
+		mesh->LoadFromFile("../../res/models/Armadillo.obj");
 
 		return true;
 	}
