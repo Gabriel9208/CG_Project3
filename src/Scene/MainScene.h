@@ -30,7 +30,7 @@ namespace CG
 		void Update(double dt);
 
 		void OnClick(int button, int action, double _xpos, double _ypos);
-
+		void chooseFace(double _xpos, double _ypos);
 		inline Camera& getCamera() { return camera; }
 
 

@@ -15,6 +15,7 @@ namespace CG
 
 	bool mouseMiddlePressed;
 	bool mouseRightPressed;
+	bool mouseLeftPressed;
 
 
 	static void keyPress(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -89,35 +90,6 @@ namespace CG
 		ImGui_ImplGlfw_CharCallback(window, c);
 	}
 
-	static void mouseEvent(GLFWwindow* window, int button, int action, int mods)
-	{
-
-		ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-
-		ImGuiIO& io = ImGui::GetIO();
-		if (!io.WantCaptureMouse) {
-			if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS)
-			{
-				glfwGetCursorPos(window, &lastCursorX, &lastCursorY);
-				mouseMiddlePressed = true;
-
-			}
-			if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_RELEASE)
-			{
-				mouseMiddlePressed = false;
-			}
-			if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
-			{
-				glfwGetCursorPos(window, &lastCursorX, &lastCursorY);
-				mouseRightPressed = true;
-			}
-			if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
-			{
-				mouseRightPressed = false;
-			}
-		}
-	}
-
 	static void mouseScroll(GLFWwindow* window, double xoffset, double yoffset)
 	{
 		const float transSpeed = 1.5f;
@@ -154,6 +126,15 @@ namespace CG
 
 			lastCursorX = xpos;
 			lastCursorY = ypos;
+		}
+		if (mouseLeftPressed)
+		{
+			App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+
+			double x, y;
+			glfwGetCursorPos(window, &x, &y);
+			app->getMainScene()->chooseFace(x, y);
+
 		}
 	}
 
@@ -223,11 +204,18 @@ namespace CG
 				if (!io.WantCaptureMouse) {
 					mainScene->OnClick(button, action, xpos, ypos);
 				
+					if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+					{
+						mouseLeftPressed = true;
+					}
+					if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+					{
+						mouseLeftPressed = false;
+					}
 					if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS)
 					{
 						glfwGetCursorPos(window, &lastCursorX, &lastCursorY);
 						mouseMiddlePressed = true;
-
 					}
 					if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_RELEASE)
 					{

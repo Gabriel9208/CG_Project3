@@ -7,11 +7,11 @@ namespace CG
 {
 	MyMesh::MyMesh() :
 		fVAO(), fFBO(), uintFaceIDTexture(), RBO(0), fVBO(), fVBOp(), fUBO(),
-		programFaceID(), fMatVPID(-1), fModelID(-1),
+		programFaceID(), fModelID(-1),
 		sVAO(), sVBOp(), sVBOn(), sUBO(),
 		wVAO(), wVBOp(), wVBOn(), wUBO(),
-		programPhong(), pMatVPID(-1), pModelID(-1),	pMatKaID(-1), pMatKdID(-1),	pMatKsID(-1),
-		programLine(), lMatVPID(-1), lModelID(-1), lMatKdID(-1)
+		programPhong(), pModelID(-1),	pMatKaID(-1), pMatKdID(-1),	pMatKsID(-1),
+		programLine(), lModelID(-1), lMatKdID(-1)
 	{
 		model = glm::mat4(1.0);
 
@@ -123,7 +123,6 @@ namespace CG
 
 		programPhong.use();
 
-		pMatVPID = glGetUniformBlockIndex(programPhong.getId(), "MatVP");
 		pModelID = glGetUniformLocation(programPhong.getId(), "Model");
 		pMatKaID = glGetUniformLocation(programPhong.getId(), "Material.Ka");
 		pMatKdID = glGetUniformLocation(programPhong.getId(), "Material.Kd");
@@ -139,7 +138,6 @@ namespace CG
 
 		programLine.use();
 
-		lMatVPID = glGetUniformBlockIndex(programLine.getId(), "MatVP");
 		lModelID = glGetUniformLocation(programLine.getId(), "Model");
 		lMatKdID = glGetUniformLocation(programLine.getId(), "Material.Kd");
 #pragma endregion
@@ -153,7 +151,6 @@ namespace CG
 
 		programFaceID.use();
 
-		fMatVPID = glGetUniformBlockIndex(programFaceID.getId(), "MatVP");
 		fModelID = glGetUniformLocation(programFaceID.getId(), "Model");
 #pragma endregion
 

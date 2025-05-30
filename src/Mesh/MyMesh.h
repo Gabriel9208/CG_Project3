@@ -12,16 +12,37 @@
 
 namespace CG
 {
-	/* Define custom traits */
+	/* DefaultTraits
+	struct DefaultTraits
+	{
+	  typedef Vec3f  Point;
+	  typedef Vec3f  Normal;
+	  typedef Vec2f  TexCoord;
+	  typedef Vec3uc Color;
+	  VertexTraits    {};
+	  HalfedgeTraits  {};
+	  EdgeTraits      {};
+	  FaceTraits      {};
+	  
+	  VertexAttributes(0);
+	  HalfedgeAttributes(Attributes::PrevHalfedge);
+	  EdgeAttributes(0);
+	  FaceAttributes(0);
+	};
+	*/
+
 	struct MyTraits : OpenMesh::DefaultTraits
 	{
-		// Define vertex and normal as double
 		using Point = OpenMesh::Vec3d;
 		using Normal = OpenMesh::Vec3d;
 
 		// Add normal property to vertices and faces
-		VertexAttributes(OpenMesh::Attributes::Normal);
+		VertexAttributes(OpenMesh::Attributes::Normal | OpenMesh::Attributes::Color);
 		FaceAttributes(OpenMesh::Attributes::Normal);
+		/*
+		HalfedgeTraits  {};
+		EdgeTraits      {};
+		*/
 	};
 
 	class MyMesh : public OpenMesh::TriMesh_ArrayKernelT<MyTraits>
@@ -64,7 +85,6 @@ namespace CG
 
 		/* Face ID shader */
 		GraphicShader programFaceID;
-		GLuint fMatVPID;
 		GLuint fModelID;
 
 		std::vector<glm::vec3> face_vertices_for_id_pass; // 與 face_vertices 內容和順序一致
@@ -84,7 +104,6 @@ namespace CG
 
 		/* Phong shader */
 		GraphicShader programPhong;
-		GLuint pMatVPID;
 		GLuint pModelID;
 		GLuint pMatKaID;
 		GLuint pMatKdID;
@@ -92,7 +111,6 @@ namespace CG
 
 		/* Line shader */
 		GraphicShader programLine;
-		GLuint lMatVPID;
 		GLuint lModelID;
 		GLuint lMatKdID;
 
@@ -102,18 +120,17 @@ namespace CG
 		glm::vec3 colorDiffuse;
 		glm::vec3 colorSpecular;
 		glm::vec3 colorLine;
-
-		
-
 	};
 
 	// ---- data structures ----
 	using Point = MyMesh::Point;
+
 	// ---- Handles ----
 	using VertexHandle = MyMesh::VertexHandle;
 	using HalfedgeHandle = MyMesh::HalfedgeHandle;
 	using EdgeHandle = MyMesh::EdgeHandle;
 	using FaceHandle = MyMesh::FaceHandle;
+
 	// ---- Iterators ----
 	using EdgeIter = MyMesh::EdgeIter;
 	using VertexIter = MyMesh::VertexIter;
