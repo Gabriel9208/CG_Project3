@@ -10,13 +10,157 @@
 
 namespace CG
 {
+	double lastCursorX;
+	double lastCursorY;
+
+	bool mouseMiddlePressed;
+	bool mouseRightPressed;
+
+
+	static void keyPress(GLFWwindow* window, int key, int scancode, int action, int mods)
+	{
+		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+
+		ImGuiIO& io = ImGui::GetIO();
+		if (!io.WantCaptureKeyboard) {
+			App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+			Camera* camera = &(app->getMainScene()->getCamera());
+			const float rotatSpeed = 2.0f;
+			const float transSpeed = 0.5f;
+
+			if (action == GLFW_REPEAT || action == GLFW_PRESS)
+			{
+				if (key == GLFW_KEY_W) // camera forward
+				{
+					if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS) {
+						camera->zoom(-transSpeed);
+
+					}
+					else
+					{
+						camera->rotateAround(-rotatSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+					}
+				}
+				if (key == GLFW_KEY_S) // camera backward
+				{
+					if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS) {
+						camera->zoom(transSpeed);
+					}
+					else
+					{
+						camera->rotateAround(rotatSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+					}
+				}
+				if (key == GLFW_KEY_D) // camera go right
+				{
+					if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS) {
+						camera->flatTranslate(transSpeed, 0);
+					}
+					else
+					{
+						camera->rotateAround(rotatSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+					}
+				}
+				if (key == GLFW_KEY_A) // camera go left
+				{
+					if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS) {
+						camera->flatTranslate(-transSpeed, 0);
+					}
+					else
+					{
+						camera->rotateAround(-rotatSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+
+					}
+				}
+				if (key == GLFW_KEY_E) // camera go up
+				{
+					camera->flatTranslate(0, transSpeed);
+				}
+				if (key == GLFW_KEY_Q) // camera go down
+				{
+					camera->flatTranslate(0, -transSpeed);
+				}
+			}
+		}
+	}
+
+	static void charCallback(GLFWwindow* window, unsigned int c)
+	{
+		ImGui_ImplGlfw_CharCallback(window, c);
+	}
+
+	static void mouseEvent(GLFWwindow* window, int button, int action, int mods)
+	{
+
+		ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+
+		ImGuiIO& io = ImGui::GetIO();
+		if (!io.WantCaptureMouse) {
+			if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS)
+			{
+				glfwGetCursorPos(window, &lastCursorX, &lastCursorY);
+				mouseMiddlePressed = true;
+
+			}
+			if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_RELEASE)
+			{
+				mouseMiddlePressed = false;
+			}
+			if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+			{
+				glfwGetCursorPos(window, &lastCursorX, &lastCursorY);
+				mouseRightPressed = true;
+			}
+			if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
+			{
+				mouseRightPressed = false;
+			}
+		}
+	}
+
+	static void mouseScroll(GLFWwindow* window, double xoffset, double yoffset)
+	{
+		const float transSpeed = 1.5f;
+
+		App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+		Camera* camera = &(app->getMainScene()->getCamera());
+		camera->zoom(-transSpeed * yoffset);
+
+	}
+
+	static void cursorEvent(GLFWwindow* window, double xpos, double ypos)
+	{
+		if (mouseMiddlePressed || mouseRightPressed)
+		{
+			App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+			Camera* camera = &(app->getMainScene()->getCamera());
+
+			double x = xpos - lastCursorX;
+			double y = ypos - lastCursorY;
+
+			float transSpeed = 0.0007f;
+			float rotatSpeed = 0.25f;
+
+			if (mouseRightPressed)
+			{
+				camera->rotateAround(-y * rotatSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+				camera->rotateAround(-x * rotatSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+			}
+
+			if (mouseMiddlePressed)
+			{
+				camera->flatTranslate(-x * transSpeed, y * transSpeed);
+			}
+
+			lastCursorX = xpos;
+			lastCursorY = ypos;
+		}
+	}
+
 	App::App()
 	{
+		gui = nullptr;
 		mainWindow = nullptr;
-
-		controlWindow = nullptr;
-		showControlWindow = true;
-
 		mainScene = nullptr;
 	}
 
@@ -25,7 +169,7 @@ namespace CG
 
 	}
 
-	auto App::Initialize() -> bool
+	auto App::initialize() -> bool
 	{
 		// Set error callback
 		glfwSetErrorCallback([](int error, const char* description)
@@ -35,14 +179,13 @@ namespace CG
 		if (!glfwInit())
 			return false;
 
-		// GL 4.6 + GLSL 460
-		const char* glsl_version = "#version 460";
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
 		// Create window with graphics context
-		mainWindow = glfwCreateWindow(1280, 720, "cg-gui", nullptr, nullptr);
+		int display_w = 1280, display_h = 720;
+		mainWindow = glfwCreateWindow(display_w, display_h, "Group6", nullptr, nullptr);
 		if (mainWindow == nullptr)
 			return false;
 		glfwMakeContextCurrent(mainWindow);
@@ -57,104 +200,78 @@ namespace CG
 			return false;
 		}
 
-		// Setup Dear ImGui context
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
-
-		// Setup Dear ImGui style
-		ImGui::StyleColorsDark();
-
-		// Setup Platform/Renderer backends
-		ImGui_ImplGlfw_InitForOpenGL(mainWindow, true);
-		ImGui_ImplOpenGL3_Init(glsl_version);
-
+		GLInit();
+		
 		glfwSetWindowUserPointer(mainWindow, this);
-		glfwSetFramebufferSizeCallback(
-			mainWindow,
-			[](GLFWwindow* window, int w, int h)
-			{
-				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
-				auto mainScene = app->GetMainScene();
-				mainScene->OnResize(w, h);
-			}
-		);
 
-		glfwSetKeyCallback(
-			mainWindow,
-			[](GLFWwindow* window, int key, int scancode, int action, int mode)
-			{
-				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
-				auto mainScene = app->GetMainScene();
-				mainScene->OnKeyboard(key, action);
-			}
-		);
-
-
-		glfwSetMouseButtonCallback(
-			mainWindow,
+		glfwSetMouseButtonCallback(mainWindow,
 			[](GLFWwindow* window, int button, int action, int mods)
 			{
 				double xpos, ypos;
 				glfwGetCursorPos(window, &xpos, &ypos);
 				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
-				auto mainScene = app->GetMainScene();
+				auto mainScene = app->getMainScene();
 				mainScene->OnClick(button, action, xpos, ypos);
-			}
-		);
 
-		controlWindow = new ControlWindow();
-		controlWindow->Initialize();
+				if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS)
+				{
+					glfwGetCursorPos(window, &lastCursorX, &lastCursorY);
+					mouseMiddlePressed = true;
+
+				}
+				if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_RELEASE)
+				{
+					mouseMiddlePressed = false;
+				}
+				if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+				{
+					glfwGetCursorPos(window, &lastCursorX, &lastCursorY);
+					mouseRightPressed = true;
+				}
+				if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
+				{
+					mouseRightPressed = false;
+				}
+			});
+
+		glfwSetScrollCallback(mainWindow,
+			[](GLFWwindow* window, double xoffset, double yoffset)
+			{
+				const float transSpeed = 0.025f;
+
+				App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+				Camera* camera = &(app->getMainScene()->getCamera());
+				camera->zoom(-transSpeed * yoffset);
+			});
+
+		glfwSetKeyCallback(mainWindow, keyPress);
+
+		glfwSetCursorPosCallback(mainWindow, cursorEvent);
+
+		glfwSetCharCallback(mainWindow, charCallback);
 
 		mainScene = new MainScene();
-		mainScene->Initialize();
+		mainScene->Initialize(display_w, display_h);
 
-		controlWindow->SetTargetScene(mainScene);
+		//gui = new GUI(mainWindow, mainScene);
 
-		// Initialization done
 		return true;
 	}
 
-	void App::Loop()
+	void App::loop()
 	{
 		while (!glfwWindowShouldClose(mainWindow))
 		{
-			// Poll and handle events (inputs, window resize, etc.)
-			// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-			// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
-			// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
-			// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
 			glfwPollEvents();
 
 			timeNow = glfwGetTime();
 			timeDelta = timeNow - timeLast;
 			timeLast = timeNow;
-			Update(timeDelta);
 
-			// Start the Dear ImGui frame
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
+			render();
 
-			if (showControlWindow)
-			{
-				controlWindow->Display();
-			}
-
-			// GUI Rendering
-			ImGui::Render();
-
-			// Render 3D scene
-			Render();
-
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-			// Update and Render additional Platform Windows
-			// (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
-			//  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
+			//gui->render();
+			/*
 			ImGuiIO& io = ImGui::GetIO();
 			(void)io;
 			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -164,33 +281,39 @@ namespace CG
 				ImGui::RenderPlatformWindowsDefault();
 				glfwMakeContextCurrent(backup_current_context);
 			}
-
+			*/
 			glfwSwapBuffers(mainWindow);
 		}
 	}
 
-	void App::Terminate()
+	void App::terminate()
 	{
-		// Cleanup
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
+		//gui->terminate();
+
+		if (mainScene != nullptr) {
+			delete mainScene;
+			mainScene = nullptr;
+		}
 
 		glfwDestroyWindow(mainWindow);
 		glfwTerminate();
+
 	}
 
-	void App::Update(double dt)
-	{
-		mainScene->Update(dt);
-	}
-
-	void App::Render()
+	void App::render()
 	{
 		int display_w, display_h;
 		glfwGetFramebufferSize(mainWindow, &display_w, &display_h);
 		glViewport(0, 0, display_w, display_h);
 
-		mainScene->Render();
+		mainScene->Render(timeNow, timeDelta, display_w, display_h);
+	}
+
+	void App::GLInit()
+	{
+		glEnable(GL_DEPTH_TEST);
+		glCullFace(GL_BACK);
+		glEnable(GL_CULL_FACE);
+		glClearColor(0.0, 0.0, 0.0, 1); //black screen
 	}
 }

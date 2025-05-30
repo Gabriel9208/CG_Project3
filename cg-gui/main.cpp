@@ -9,11 +9,11 @@ int main()
 
 	std::unique_ptr<CG::App> app = std::make_unique<CG::App>();
 
-	app->Initialize();
+	app->initialize();
 
-	app->Loop();
+	app->loop();
 	
-	app->Terminate();
+	app->terminate();
 
 	std::cout << "App end!" << std::endl;
 

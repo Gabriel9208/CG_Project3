@@ -147,11 +147,22 @@
     <ClCompile Include="..\include\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\include\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\src\App\App.cpp" />
+    <ClCompile Include="..\src\Graphic\EBO.cpp" />
+    <ClCompile Include="..\src\Graphic\FBO.cpp" />
+    <ClCompile Include="..\src\Graphic\Material\Material.cpp" />
+    <ClCompile Include="..\src\Graphic\Material\MaterialManager.cpp" />
+    <ClCompile Include="..\src\Graphic\Material\Texture.cpp" />
+    <ClCompile Include="..\src\Graphic\ShaderProgram\ComputeShader.cpp" />
+    <ClCompile Include="..\src\Graphic\ShaderProgram\GraphicShader.cpp" />
+    <ClCompile Include="..\src\Graphic\ShaderProgram\ShaderProgram.cpp" />
+    <ClCompile Include="..\src\Graphic\UBO.cpp" />
+    <ClCompile Include="..\src\Graphic\VAO.cpp" />
     <ClCompile Include="..\src\Mesh\MyMesh.cpp" />
     <ClCompile Include="..\src\Scene\Camera.cpp" />
+    <ClCompile Include="..\src\Scene\Light.cpp" />
     <ClCompile Include="..\src\Scene\MainScene.cpp" />
     <ClCompile Include="..\src\Utilty\Error.cpp" />
-    <ClCompile Include="..\src\Window\ControlWindow.cpp" />
+    <ClCompile Include="..\src\Window\GUI.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -162,12 +173,27 @@
     <ClInclude Include="..\include\imgui\imgui.h" />
     <ClInclude Include="..\include\imgui\imgui_internal.h" />
     <ClInclude Include="..\src\App\App.h" />
+    <ClInclude Include="..\src\Graphic\EBO.h" />
+    <ClInclude Include="..\src\Graphic\FBO.h" />
+    <ClInclude Include="..\src\Graphic\Material\Material.h" />
+    <ClInclude Include="..\src\Graphic\Material\MaterialManager.h" />
+    <ClInclude Include="..\src\Graphic\Material\Texture.h" />
+    <ClInclude Include="..\src\Graphic\ShaderProgram\ComputeShader.h" />
+    <ClInclude Include="..\src\Graphic\ShaderProgram\GraphicShader.h" />
+    <ClInclude Include="..\src\Graphic\ShaderProgram\ShaderProgram.h" />
+    <ClInclude Include="..\src\Graphic\SSBO.h" />
+    <ClInclude Include="..\src\Graphic\StorageBuffer.h" />
+    <ClInclude Include="..\src\Graphic\UBO.h" />
+    <ClInclude Include="..\src\Graphic\VAO.h" />
+    <ClInclude Include="..\src\Graphic\VBO.h" />
     <ClInclude Include="..\src\Mesh\MyMesh.h" />
     <ClInclude Include="..\src\Scene\Camera.h" />
+    <ClInclude Include="..\src\Scene\Light.h" />
     <ClInclude Include="..\src\Scene\MainScene.h" />
+    <ClInclude Include="..\src\stb_image.h" />
     <ClInclude Include="..\src\Utilty\Error.h" />
     <ClInclude Include="..\src\Utilty\LoadShaders.h" />
-    <ClInclude Include="..\src\Window\ControlWindow.h" />
+    <ClInclude Include="..\src\Window\GUI.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\res\shaders\DSPhong_Material.fp" />

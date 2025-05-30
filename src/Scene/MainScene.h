@@ -1,5 +1,7 @@
 #pragma once
-
+#include "Camera.h"
+#include "../Graphic/ShaderProgram/GraphicShader.h"
+#include "../Graphic/UBO.h"
 #include <array>
 #include <string>
 #include <map>
@@ -9,7 +11,6 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "Camera.h"
 #include <Mesh/MyMesh.h>
 
 constexpr auto PARTSNUM = 18;
@@ -22,20 +23,26 @@ namespace CG
 		MainScene();
 		~MainScene();
 
-		auto Initialize() -> bool;
+		bool Initialize(int display_w, int display_h);
+		void Render(double timeNow, double timeDelta, int display_w, int display_h);
+		void Resize(int display_w, int display_h);
+		void SetObjectsVisibility(std::vector<bool> isDisplays);
 		void Update(double dt);
-		void Render();
 
-		void OnResize(int width, int height);
-		void OnKeyboard(int key, int action);
 		void OnClick(int button, int action, double _xpos, double _ypos);
 
-	private:
-		auto LoadScene() -> bool;
+		inline Camera& getCamera() { return camera; }
+
 
 	private:
-		Camera* camera;
+		bool loadScene(int display_w, int display_h);
+		void loadModel();
+		void loadAnimation();
 
+		GraphicShader program;
+		UBO matVPUbo;
+
+		Camera camera;
 		MyMesh* mesh;
 
 		double xpos;

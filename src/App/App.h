@@ -8,42 +8,37 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "Window/ControlWindow.h"
+#include "../Window/GUI.h"
 #include "Scene/MainScene.h"
+#include "../Scene/Camera.h"
 
 namespace CG
 {
-	class App
-	{
+    class App
+    {
     public:
         App();
         ~App();
 
-        auto Initialize() -> bool;
-        void Loop();
-        void Terminate();
+        bool initialize();
+        void loop();
+        void terminate();
+
+        inline MainScene* getMainScene() { return mainScene; }
 
     private:
-        void Update(double dt);
-        void Render();
+        void render();
 
-    private:
+        void GLInit();
+
         GLFWwindow* mainWindow;
-
-        ControlWindow* controlWindow;
-        bool showControlWindow;
-
         MainScene* mainScene;
+        GUI* gui;
 
         double timeNow = 0;
         double timeLast = 0;
         double timeDelta = 0;
 
-    public:
-        MainScene* GetMainScene() const
-        {
-            return mainScene;
-        }
-	};
+        static int mode; // 0: showcase, 1: animation, 2: edit
+    };
 }
-

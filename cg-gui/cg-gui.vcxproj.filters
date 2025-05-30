@@ -26,9 +26,6 @@
     <ClCompile Include="..\include\imgui\backends\imgui_impl_opengl3.cpp">
       <Filter>ImGUI\backends</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Window\ControlWindow.cpp">
-      <Filter>Window</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Scene\MainScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
@@ -40,6 +37,42 @@
     </ClCompile>
     <ClCompile Include="..\src\Utilty\Error.cpp">
       <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Graphic\EBO.cpp">
+      <Filter>Graphic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Graphic\FBO.cpp">
+      <Filter>Graphic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Graphic\UBO.cpp">
+      <Filter>Graphic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Graphic\VAO.cpp">
+      <Filter>Graphic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Graphic\Material\Material.cpp">
+      <Filter>Graphic\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Graphic\Material\MaterialManager.cpp">
+      <Filter>Graphic\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Graphic\Material\Texture.cpp">
+      <Filter>Graphic\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Graphic\ShaderProgram\ComputeShader.cpp">
+      <Filter>Graphic\ShaderProgram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Graphic\ShaderProgram\GraphicShader.cpp">
+      <Filter>Graphic\ShaderProgram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Graphic\ShaderProgram\ShaderProgram.cpp">
+      <Filter>Graphic\ShaderProgram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Scene\Light.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Window\GUI.cpp">
+      <Filter>Window</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -67,6 +100,15 @@
     <Filter Include="Shader">
       <UniqueIdentifier>{338a8273-682a-48ce-aede-241452fb2d53}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphic">
+      <UniqueIdentifier>{91f7a4c6-f1d6-4acd-9b26-e14ab7bf1c12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphic\Material">
+      <UniqueIdentifier>{8e49430f-e19f-49bf-9732-29b388c9504b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphic\ShaderProgram">
+      <UniqueIdentifier>{510acb12-5b8a-45e2-990c-0a3b5d6130d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\App\App.h">
@@ -93,9 +135,6 @@
     <ClInclude Include="..\src\Utilty\LoadShaders.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Window\ControlWindow.h">
-      <Filter>Window</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Scene\MainScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
@@ -108,6 +147,52 @@
     <ClInclude Include="..\src\Utilty\Error.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Graphic\EBO.h">
+      <Filter>Graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Graphic\FBO.h">
+      <Filter>Graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Graphic\SSBO.h">
+      <Filter>Graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Graphic\StorageBuffer.h">
+      <Filter>Graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Graphic\UBO.h">
+      <Filter>Graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Graphic\VAO.h">
+      <Filter>Graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Graphic\VBO.h">
+      <Filter>Graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Graphic\Material\Material.h">
+      <Filter>Graphic\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Graphic\Material\MaterialManager.h">
+      <Filter>Graphic\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Graphic\Material\Texture.h">
+      <Filter>Graphic\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Graphic\ShaderProgram\ComputeShader.h">
+      <Filter>Graphic\ShaderProgram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Graphic\ShaderProgram\GraphicShader.h">
+      <Filter>Graphic\ShaderProgram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Graphic\ShaderProgram\ShaderProgram.h">
+      <Filter>Graphic\ShaderProgram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Scene\Light.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Window\GUI.h">
+      <Filter>Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\res\shaders\DSPhong_Material.fp">
