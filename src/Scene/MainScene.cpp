@@ -78,7 +78,7 @@ namespace CG
 			std::cout << wp[0] << " " << wp[1] << " " << wp[2] << "\n";
 
 			unsigned int idx;
-			GLCall(glGetTextureSubImage(mesh->fboColor, 0, static_cast<GLint>(windowX), static_cast<GLint>(windowY), 0, 1, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, sizeof(unsigned int), &idx));
+			GLCall(glGetTextureSubImage(mesh->getFboColor(), 0, static_cast<GLint>(windowX), static_cast<GLint>(windowY), 0, 1, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, sizeof(unsigned int), &idx));
 			//idx -= 1;
 			GLCall(glBindFramebuffer(GL_READ_FRAMEBUFFER, 0));
 

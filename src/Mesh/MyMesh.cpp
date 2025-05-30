@@ -1,12 +1,17 @@
 #include <OpenMesh/Core/IO/MeshIO.hh>
 
 #include "MyMesh.h"
-#include <Utilty/LoadShaders.h>
 #include "../Utilty/Error.h"
 
 namespace CG
 {
-	MyMesh::MyMesh()
+	MyMesh::MyMesh() :
+		fVAO(), fFBO(), uintFaceIDTexture(), RBO(0), fVBO(), fVBOp(), fUBO(),
+		programFaceID(), fMatVPID(-1), fModelID(-1),
+		sVAO(), sVBOp(), sVBOn(), sUBO(),
+		wVAO(), wVBOp(), wVBOn(), wUBO(),
+		programPhong(), pMatVPID(-1), pModelID(-1),	pMatKaID(-1), pMatKdID(-1),	pMatKsID(-1),
+		programLine(), lMatVPID(-1), lModelID(-1), lMatKdID(-1)
 	{
 		model = glm::mat4(1.0);
 
@@ -44,22 +49,20 @@ namespace CG
 	{
 #pragma region Face ID to frame buffer
 		
-		GLCall(glUseProgram(programFaceID));
-		GLCall(glBindVertexArray(fVao));
-		GLCall(glBindFramebuffer(GL_FRAMEBUFFER, fbo));
-
+		programFaceID.use();
+		fVAO.bind();
+		fFBO.bind();
 		GLCall(glUniformMatrix4fv(fModelID, 1, GL_FALSE, &model[0][0]));
 
 		// update data to UBO for MVP
-		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, fUbo));
-		GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &view));
-		GLCall(glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), &proj));
-		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+		fUBO.bind();
+		fUBO.fillInData(0, sizeof(glm::mat4), &view);
+		fUBO.fillInData(sizeof(glm::mat4), sizeof(glm::mat4), &proj);
+		fUBO.unbind();
 
-
-		GLuint clear_color_uint[4] = {0, 0, 0, 0}; // ID 0 代表背景
-		GLCall(glClearBufferuiv(GL_COLOR, 0, clear_color_uint)); // 清除 GL_COLOR_ATTACHMENT0
-		GLCall(glClear(GL_DEPTH_BUFFER_BIT)); // 清除深度緩衝區
+		GLuint clear_color_uint[4] = {0, 0, 0, 0}; 
+		GLCall(glClearBufferuiv(GL_COLOR, 0, clear_color_uint)); // clear GL_COLOR_ATTACHMENT0
+		GLCall(glClear(GL_DEPTH_BUFFER_BIT));
 
 		GLCall(glDrawArrays(GL_TRIANGLES, 0, face_vertices_for_id_pass.size()));
 		
@@ -69,8 +72,8 @@ namespace CG
 
 #pragma region Solid Rendering
 		
-		GLCall(glUseProgram(programPhong));
-		GLCall(glBindVertexArray(sVAO));
+		programPhong.use();
+		sVAO.bind();
 
 		GLCall(glUniformMatrix4fv(pModelID, 1, GL_FALSE, &model[0][0]));
 		GLCall(glUniform3fv(pMatKaID, 1, &colorAmbient[0]));
@@ -78,27 +81,25 @@ namespace CG
 		GLCall(glUniform3fv(pMatKsID, 1, &colorSpecular[0]));
 
 		// update data to UBO for MVP
-		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, sUBO));
-		GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &view));
-		GLCall(glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), &proj));
-		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+		sUBO.bind();
+		sUBO.fillInData(0, sizeof(glm::mat4), &view);
+		sUBO.fillInData(sizeof(glm::mat4), sizeof(glm::mat4), &proj);
 
 		// Draw solid mesh
 		GLCall(glDrawArrays(GL_TRIANGLES, 0, this->n_faces() * 3));
 #pragma endregion
 		
 #pragma region Wireframe Rendering
-		GLCall(glUseProgram(programLine));
-		GLCall(glBindVertexArray(wVAO));
+		programLine.use();
+		wVAO.bind();
 
 		GLCall(glUniformMatrix4fv(lModelID, 1, GL_FALSE, &model[0][0]));
 		GLCall(glUniform3fv(lMatKdID, 1, &colorLine[0]));
 
 		// update data to UBO for MVP
-		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, wUBO));
-		GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &view));
-		GLCall(glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), &proj));
-		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+		wUBO.bind();
+		wUBO.fillInData(0, sizeof(glm::mat4), &view);
+		wUBO.fillInData(sizeof(glm::mat4), sizeof(glm::mat4), &proj);
 
 		GLCall(glLineWidth(1.5f));
 		// Draw wireframe mesh
@@ -117,15 +118,16 @@ namespace CG
 			{ GL_VERTEX_SHADER, "./res/shaders/DSPhong_Material.vp" }, //vertex shader
 			{ GL_FRAGMENT_SHADER, "./res/shaders/DSPhong_Material.fp" }, //fragment shader
 			{ GL_NONE, NULL } };
-		programPhong = LoadShaders(shadersPhong);//Ūshader
 
-		GLCall(glUseProgram(programPhong));//uniformѼƼƭȫeuse shader
+		programPhong.load(shadersPhong);//Ūshader
 
-		pMatVPID = glGetUniformBlockIndex(programPhong, "MatVP");
-		pModelID = glGetUniformLocation(programPhong, "Model");
-		pMatKaID = glGetUniformLocation(programPhong, "Material.Ka");
-		pMatKdID = glGetUniformLocation(programPhong, "Material.Kd");
-		pMatKsID = glGetUniformLocation(programPhong, "Material.Ks");
+		programPhong.use();
+
+		pMatVPID = glGetUniformBlockIndex(programPhong.getId(), "MatVP");
+		pModelID = glGetUniformLocation(programPhong.getId(), "Model");
+		pMatKaID = glGetUniformLocation(programPhong.getId(), "Material.Ka");
+		pMatKdID = glGetUniformLocation(programPhong.getId(), "Material.Kd");
+		pMatKsID = glGetUniformLocation(programPhong.getId(), "Material.Ks");
 #pragma endregion
 
 #pragma region Line Shader
@@ -133,13 +135,13 @@ namespace CG
 			{ GL_VERTEX_SHADER, "./res/shaders/line.vp" },//vertex shader
 			{ GL_FRAGMENT_SHADER, "./res/shaders/line.fp" },//fragment shader
 			{ GL_NONE, NULL } };
-		programLine = LoadShaders(shadersLine);//Ūshader
+		programLine.load(shadersLine);//Ūshader
 
-		GLCall(glUseProgram(programLine));//uniformѼƼƭȫeuse shader
+		programLine.use();
 
-		lMatVPID = glGetUniformBlockIndex(programLine, "MatVP");
-		lModelID = glGetUniformLocation(programLine, "Model");
-		lMatKdID = glGetUniformLocation(programLine, "Material.Kd");
+		lMatVPID = glGetUniformBlockIndex(programLine.getId(), "MatVP");
+		lModelID = glGetUniformLocation(programLine.getId(), "Model");
+		lMatKdID = glGetUniformLocation(programLine.getId(), "Material.Kd");
 #pragma endregion
 
 #pragma region faceID Shader
@@ -147,29 +149,24 @@ namespace CG
 			{ GL_VERTEX_SHADER, "./res/shaders/faceid.vp" },//vertex shader
 			{ GL_FRAGMENT_SHADER, "./res/shaders/faceid.fp" },//fragment shader
 			{ GL_NONE, NULL } };
-		programFaceID = LoadShaders(shadersFace);
+		programFaceID.load(shadersFace);
 
-		GLCall(glUseProgram(programFaceID));//uniformѼƼƭȫeuse shader
+		programFaceID.use();
 
-		fMatVPID = glGetUniformBlockIndex(programFaceID, "MatVP");
-		fModelID = glGetUniformLocation(programFaceID, "Model");
+		fMatVPID = glGetUniformBlockIndex(programFaceID.getId(), "MatVP");
+		fModelID = glGetUniformLocation(programFaceID.getId(), "Model");
 #pragma endregion
 
 
 #pragma region Solid Rendering
-		GLCall(glGenVertexArrays(1, &sVAO));
-		GLCall(glBindVertexArray(sVAO));
+		sVAO.bind();
 
 		// UBO
-		GLCall(glGenBuffers(1, &sUBO));
-		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, sUBO));
-		GLCall(glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, NULL, GL_DYNAMIC_DRAW));
-		// get uniform struct size
-		int sUBOsize = 0;
-		GLCall(glGetActiveUniformBlockiv(programPhong, pMatVPID, GL_UNIFORM_BLOCK_DATA_SIZE, &sUBOsize));
+		sUBO.bind();
+		sUBO.initialize(sizeof(glm::mat4) * 2);
+
 		// bind UBO to its idx
-		GLCall(glBindBufferRange(GL_UNIFORM_BUFFER, 0, sUBO, 0, sUBOsize));
-		GLCall(glUniformBlockBinding(programPhong, pMatVPID, 0));
+		sUBO.associateWithShaderBlock(programPhong.getId(), "MatVP", 0);
 
 		// triangle vertex index
 		for (FaceHandle f : this->faces())
@@ -192,36 +189,30 @@ namespace CG
 			}
 		}
 
-		GLCall(glGenBuffers(1, &sVBOp));
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, sVBOp));
-		GLCall(glBufferData(GL_ARRAY_BUFFER, face_vertices.size() * sizeof(glm::vec3), glm::value_ptr(face_vertices[0]), GL_STATIC_DRAW));
+		sVBOp.bind();
+		sVBOp.initialize(face_vertices, GL_STATIC_DRAW);
 		GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0));
 		GLCall(glEnableVertexAttribArray(0));
+		sVBOp.unbind();
 
-		GLCall(glGenBuffers(1, &sVBOn));
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, sVBOn));
-		GLCall(glBufferData(GL_ARRAY_BUFFER, face_normals.size() * sizeof(glm::vec3), glm::value_ptr(face_normals[0]), GL_STATIC_DRAW));
+		sVBOn.bind();
+		sVBOn.initialize(face_normals, GL_STATIC_DRAW);
 		GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0));
 		GLCall(glEnableVertexAttribArray(1));
+		sVBOn.unbind();
 
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
-		GLCall(glBindVertexArray(0));
+		sVAO.unbind();
 #pragma endregion
 
 #pragma region Wireframe Rendering
-		GLCall(glGenVertexArrays(1, &wVAO));
-		GLCall(glBindVertexArray(wVAO));
+		wVAO.bind();
 
 		// UBO
-		GLCall(glGenBuffers(1, &wUBO));
-		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, wUBO));
-		GLCall(glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, NULL, GL_DYNAMIC_DRAW));
+		wUBO.bind();
+		wUBO.initialize(sizeof(glm::mat4) * 2);
+
 		// get uniform struct size
-		int wUBOsize = 0;
-		GLCall(glGetActiveUniformBlockiv(programLine, lMatVPID, GL_UNIFORM_BLOCK_DATA_SIZE, &wUBOsize));
-		// bind UBO to its idx
-		GLCall(glBindBufferRange(GL_UNIFORM_BUFFER, 0, wUBO, 0, wUBOsize));
-		GLCall(glUniformBlockBinding(programLine, lMatVPID, 0));
+		sUBO.associateWithShaderBlock(programLine.getId(), "MatVP", 0);
 
 		// triangle vertex index
 		std::vector<glm::vec3> edge_vertices;
@@ -235,38 +226,31 @@ namespace CG
 			edge_normals.push_back(d2f(normal(e)));
 		}
 
-		GLCall(glGenBuffers(1, &wVBOp));
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, wVBOp));
-		GLCall(glBufferData(GL_ARRAY_BUFFER, edge_vertices.size() * sizeof(glm::vec3), glm::value_ptr(edge_vertices[0]), GL_STATIC_DRAW));
+		wVBOp.bind();
+		wVBOp.initialize(edge_vertices, GL_STATIC_DRAW);
 		GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0));
 		GLCall(glEnableVertexAttribArray(0));
+		wVBOp.unbind();
 
-		GLCall(glGenBuffers(1, &wVBOn));
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, wVBOn));
-		GLCall(glBufferData(GL_ARRAY_BUFFER, edge_normals.size() * sizeof(glm::vec3), glm::value_ptr(edge_normals[0]), GL_STATIC_DRAW));
+		wVBOn.bind();
+		wVBOn.initialize(edge_vertices, GL_STATIC_DRAW);
 		GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0));
 		GLCall(glEnableVertexAttribArray(1));
+		wVBOn.unbind();
 
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
-		GLCall(glBindVertexArray(0));
+		wVAO.unbind();
 #pragma endregion
 		
-		// create framebuffer
-		GLCall(glGenFramebuffers(1, &fbo));
-		GLCall(glBindFramebuffer(GL_FRAMEBUFFER, fbo));
+		fFBO.bind();
 
-		GLCall(glGenTextures(1, &fboColor));
-		GLCall(glBindTexture(GL_TEXTURE_2D, fboColor));
-		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_R32UI, 1280, 720, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, NULL));
-		GLCall(glTextureParameteri(fboColor, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-		GLCall(glTextureParameteri(fboColor, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+		uintFaceIDTexture.setup(1280, 720);
 
-		GLCall(glGenRenderbuffers(1, &rbo));
-		GLCall(glBindRenderbuffer(GL_RENDERBUFFER, rbo));
+		GLCall(glGenRenderbuffers(1, &RBO));
+		GLCall(glBindRenderbuffer(GL_RENDERBUFFER, RBO));
 		GLCall(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1280, 720));
-		GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo));
+		GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RBO));
 
-		GLCall(glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, fboColor, 0));
+		GLCall(glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, uintFaceIDTexture.getId(), 0));
 
 		GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
@@ -297,38 +281,25 @@ namespace CG
                 if (j > 0) ++v_it; // 後續三角形的第三個頂點需要移動it
             }
 		}
-
-		GLCall(glGenVertexArrays(1, &fVao));
-		GLCall(glBindVertexArray(fVao));
 		
-		GLCall(glGenBuffers(1, &fUbo));
-		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, fUbo));
-		GLCall(glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, NULL, GL_DYNAMIC_DRAW));
+		fVAO.bind();
+		
+		fUBO.initialize(sizeof(glm::mat4) * 2);
 		
 		// get uniform struct size
-		int fUbosize = 0;
-		GLCall(glGetActiveUniformBlockiv(programFaceID, fMatVPID, GL_UNIFORM_BLOCK_DATA_SIZE, &fUbosize));
-		// bind UBO to its idx
-		GLCall(glBindBufferBase(GL_UNIFORM_BUFFER, 0, fUbo));
-		GLCall(glUniformBlockBinding(programFaceID, fMatVPID, 0));
+		fUBO.associateWithShaderBlock(programFaceID.getId(), "MatVP", 0);
 
-
-		GLCall(glGenBuffers(1, &fpvbo));
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, fpvbo));
-		GLCall(glBufferData(GL_ARRAY_BUFFER, face_vertices_for_id_pass.size() * sizeof(glm::vec3), glm::value_ptr(face_vertices_for_id_pass[0]), GL_STATIC_DRAW));
+		fVBOp.initialize(face_vertices_for_id_pass, GL_STATIC_DRAW);
 		GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0));
 		GLCall(glEnableVertexAttribArray(0));
 
-		GLCall(glGenBuffers(1, &fvbo));
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, fvbo));
-		GLCall(glBufferData(GL_ARRAY_BUFFER, vertex_face_ids.size() * sizeof(unsigned int), &vertex_face_ids[0], GL_STATIC_DRAW));
+		fVBO.initialize(vertex_face_ids, GL_STATIC_DRAW);
 		GLCall(glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, 0, 0));
 		GLCall(glEnableVertexAttribArray(1));
 
-		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
-		GLCall(glBindVertexArray(0));
-		
+		fUBO.unbind();
+		fVBO.unbind();
+		fVAO.unbind();
 	}
 
 	OpenMesh::Vec3d MyMesh::normal(const HalfedgeHandle he) const

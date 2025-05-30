@@ -7,7 +7,7 @@
 class FBO
 {
 private:
-	GLuint id;
+	GLuint id, textureId;
 
 public:
 	FBO();

@@ -25,5 +25,7 @@ public:
 	void initialize(unsigned int _size);
 	void bind() const;
 	void unbind() const;
+
+	unsigned int getSize();
 };
 

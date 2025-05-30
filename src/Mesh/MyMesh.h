@@ -1,4 +1,10 @@
 #pragma once
+#include "../Graphic/VAO.h"
+#include "../Graphic/VBO.h"
+#include "../Graphic/UBO.h"
+#include "../Graphic/ShaderProgram/GraphicShader.h"
+#include "../Graphic/FBO.h"
+#include "../Graphic/Material/UnsignedIntTexture.h"
 
 #include <OpenMesh/Core/Mesh/TriMesh_ArrayKernelT.hh>
 #include <GL/glew.h>
@@ -28,22 +34,7 @@ namespace CG
 
 		void Render(const glm::mat4 proj, const glm::mat4 view);
 
-		/* Buffers for face ID rendering */
-		GLuint fVao;
-		GLuint fbo;
-		GLuint fboColor;
-		GLuint rbo;
-		GLuint fvbo; // face ID
-		GLuint fpvbo; // pos
-		GLuint fUbo;
-
-		/* Face ID shader */
-		GLuint programFaceID;
-		GLuint fMatVPID;
-		GLuint fModelID;
-
-		std::vector<glm::vec3> face_vertices_for_id_pass; // 與 face_vertices 內容和順序一致
-		GLenum DrawBuffers[1];
+		inline GLuint getFboColor() { return uintFaceIDTexture.getId(); }
 
 	private:
 		void CreateBuffers();
@@ -62,20 +53,37 @@ namespace CG
 		std::vector<glm::vec3> face_vertices;
 		std::vector<glm::vec3> face_normals;
 
+		/* Buffers for face ID rendering */
+		VAO fVAO;
+		FBO fFBO;
+		UnsignedIntTexture uintFaceIDTexture;
+		GLuint RBO;
+		VBO<unsigned int> fVBO; // face ID
+		VBO<glm::vec3> fVBOp; // pos
+		UBO fUBO;
+
+		/* Face ID shader */
+		GraphicShader programFaceID;
+		GLuint fMatVPID;
+		GLuint fModelID;
+
+		std::vector<glm::vec3> face_vertices_for_id_pass; // 與 face_vertices 內容和順序一致
+		GLenum DrawBuffers[1];
+
 		/* Buffers for solid rendering */
-		GLuint sVAO;
-		GLuint sVBOp;
-		GLuint sVBOn;
-		GLuint sUBO;
+		VAO sVAO;
+		VBO<glm::vec3> sVBOp;
+		VBO<glm::vec3> sVBOn;
+		UBO sUBO;
 
 		/* Buffers for wireframe rendering */
-		GLuint wVAO;
-		GLuint wVBOp;
-		GLuint wVBOn;
-		GLuint wUBO;
+		VAO wVAO;
+		VBO<glm::vec3> wVBOp;
+		VBO<glm::vec3> wVBOn;
+		UBO wUBO;
 
 		/* Phong shader */
-		GLuint programPhong;
+		GraphicShader programPhong;
 		GLuint pMatVPID;
 		GLuint pModelID;
 		GLuint pMatKaID;
@@ -83,7 +91,7 @@ namespace CG
 		GLuint pMatKsID;
 
 		/* Line shader */
-		GLuint programLine;
+		GraphicShader programLine;
 		GLuint lMatVPID;
 		GLuint lModelID;
 		GLuint lMatKdID;

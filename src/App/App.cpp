@@ -202,6 +202,11 @@ namespace CG
 
 		GLInit();
 		
+		mainScene = new MainScene();
+		mainScene->Initialize(display_w, display_h);
+
+		gui = new GUI(mainWindow, mainScene);
+
 		glfwSetWindowUserPointer(mainWindow, this);
 
 		glfwSetMouseButtonCallback(mainWindow,
@@ -211,26 +216,32 @@ namespace CG
 				glfwGetCursorPos(window, &xpos, &ypos);
 				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
 				auto mainScene = app->getMainScene();
-				mainScene->OnClick(button, action, xpos, ypos);
 
-				if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS)
-				{
-					glfwGetCursorPos(window, &lastCursorX, &lastCursorY);
-					mouseMiddlePressed = true;
+				ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+				ImGuiIO& io = ImGui::GetIO();
 
-				}
-				if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_RELEASE)
-				{
-					mouseMiddlePressed = false;
-				}
-				if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
-				{
-					glfwGetCursorPos(window, &lastCursorX, &lastCursorY);
-					mouseRightPressed = true;
-				}
-				if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
-				{
-					mouseRightPressed = false;
+				if (!io.WantCaptureMouse) {
+					mainScene->OnClick(button, action, xpos, ypos);
+				
+					if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS)
+					{
+						glfwGetCursorPos(window, &lastCursorX, &lastCursorY);
+						mouseMiddlePressed = true;
+
+					}
+					if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_RELEASE)
+					{
+						mouseMiddlePressed = false;
+					}
+					if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+					{
+						glfwGetCursorPos(window, &lastCursorX, &lastCursorY);
+						mouseRightPressed = true;
+					}
+					if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
+					{
+						mouseRightPressed = false;
+					}
 				}
 			});
 
@@ -250,11 +261,6 @@ namespace CG
 
 		glfwSetCharCallback(mainWindow, charCallback);
 
-		mainScene = new MainScene();
-		mainScene->Initialize(display_w, display_h);
-
-		//gui = new GUI(mainWindow, mainScene);
-
 		return true;
 	}
 
@@ -270,8 +276,8 @@ namespace CG
 
 			render();
 
-			//gui->render();
-			/*
+			gui->render();
+			
 			ImGuiIO& io = ImGui::GetIO();
 			(void)io;
 			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -281,14 +287,14 @@ namespace CG
 				ImGui::RenderPlatformWindowsDefault();
 				glfwMakeContextCurrent(backup_current_context);
 			}
-			*/
+			
 			glfwSwapBuffers(mainWindow);
 		}
 	}
 
 	void App::terminate()
 	{
-		//gui->terminate();
+		gui->terminate();
 
 		if (mainScene != nullptr) {
 			delete mainScene;

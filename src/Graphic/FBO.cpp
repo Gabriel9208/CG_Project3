@@ -49,6 +49,7 @@ void FBO::copy(const FBO& other, int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+
 void FBO::unbind() const
 {
 	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));

@@ -152,6 +152,7 @@
     <ClCompile Include="..\src\Graphic\Material\Material.cpp" />
     <ClCompile Include="..\src\Graphic\Material\MaterialManager.cpp" />
     <ClCompile Include="..\src\Graphic\Material\Texture.cpp" />
+    <ClCompile Include="..\src\Graphic\Material\UnsignedIntTexture.cpp" />
     <ClCompile Include="..\src\Graphic\ShaderProgram\ComputeShader.cpp" />
     <ClCompile Include="..\src\Graphic\ShaderProgram\GraphicShader.cpp" />
     <ClCompile Include="..\src\Graphic\ShaderProgram\ShaderProgram.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="..\src\Graphic\Material\Material.h" />
     <ClInclude Include="..\src\Graphic\Material\MaterialManager.h" />
     <ClInclude Include="..\src\Graphic\Material\Texture.h" />
+    <ClInclude Include="..\src\Graphic\Material\UnsignedIntTexture.h" />
     <ClInclude Include="..\src\Graphic\ShaderProgram\ComputeShader.h" />
     <ClInclude Include="..\src\Graphic\ShaderProgram\GraphicShader.h" />
     <ClInclude Include="..\src\Graphic\ShaderProgram\ShaderProgram.h" />
@@ -192,7 +194,6 @@
     <ClInclude Include="..\src\Scene\MainScene.h" />
     <ClInclude Include="..\src\stb_image.h" />
     <ClInclude Include="..\src\Utilty\Error.h" />
-    <ClInclude Include="..\src\Utilty\LoadShaders.h" />
     <ClInclude Include="..\src\Window\GUI.h" />
   </ItemGroup>
   <ItemGroup>

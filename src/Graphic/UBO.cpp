@@ -60,7 +60,7 @@ void UBO::initialize(unsigned int _size)
 {
 	GLCall(glGenBuffers(1, &id));
 	GLCall(glBindBuffer(GL_UNIFORM_BUFFER, id));
-	GLCall(glBufferData(GL_UNIFORM_BUFFER, _size, 0, GL_DYNAMIC_DRAW));
+	GLCall(glBufferData(GL_UNIFORM_BUFFER, _size, NULL, GL_DYNAMIC_DRAW));
 	size = _size;
 }
 
@@ -73,3 +73,9 @@ void UBO::unbind() const
 {
 	GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
+
+unsigned int UBO::getSize()
+{
+	return size;
+}
+

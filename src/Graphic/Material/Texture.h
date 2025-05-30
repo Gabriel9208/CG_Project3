@@ -6,7 +6,7 @@
 
 class Texture
 {
-private:
+protected:
 	GLuint id;
 	int width, height, channels;
 
