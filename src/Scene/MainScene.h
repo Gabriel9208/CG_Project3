@@ -29,16 +29,12 @@ namespace CG
 		void SetObjectsVisibility(std::vector<bool> isDisplays);
 		void Update(double dt);
 
-		void OnClick(int button, int action, double _xpos, double _ypos);
-		void chooseFace(double _xpos, double _ypos);
 		inline Camera& getCamera() { return camera; }
-
-
+		inline GLuint getFaceIDTextureID() const { return mesh->getFboColor(); }
+		inline MyMesh* getMesh() { return mesh; }
 	private:
 		bool loadScene(int display_w, int display_h);
-		void loadModel();
-		void loadAnimation();
-
+		
 		GraphicShader program;
 		UBO matVPUbo;
 
@@ -47,8 +43,6 @@ namespace CG
 
 		double xpos;
 		double ypos;
-
-		bool isClicked;
 	};
 }
 

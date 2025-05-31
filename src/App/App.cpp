@@ -7,6 +7,7 @@
 #include <imgui_impl_glfw.h>
 
 #include "App.h"
+#include "../Utilty/FacePicker.h"
 
 namespace CG
 {
@@ -102,9 +103,10 @@ namespace CG
 
 	static void cursorEvent(GLFWwindow* window, double xpos, double ypos)
 	{
+		App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+
 		if (mouseMiddlePressed || mouseRightPressed)
 		{
-			App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
 			Camera* camera = &(app->getMainScene()->getCamera());
 
 			double x = xpos - lastCursorX;
@@ -129,12 +131,7 @@ namespace CG
 		}
 		if (mouseLeftPressed)
 		{
-			App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
-
-			double x, y;
-			glfwGetCursorPos(window, &x, &y);
-			app->getMainScene()->chooseFace(x, y);
-
+			app->chooseFace(window);
 		}
 	}
 
@@ -186,6 +183,9 @@ namespace CG
 		mainScene = new MainScene();
 		mainScene->Initialize(display_w, display_h);
 
+		FacePicker& fp = FacePicker::getInstance();
+		fp.registerToMesh(mainScene->getMesh());
+
 		gui = new GUI(mainWindow, mainScene);
 
 		glfwSetWindowUserPointer(mainWindow, this);
@@ -201,16 +201,27 @@ namespace CG
 				ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
 				ImGuiIO& io = ImGui::GetIO();
 
-				if (!io.WantCaptureMouse) {
-					mainScene->OnClick(button, action, xpos, ypos);
-				
+				if (!io.WantCaptureMouse) {				
 					if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 					{
+						FacePicker& fp = FacePicker::getInstance();
+						fp.clearPickedFaces();
+						app->chooseFace(window);
+
 						mouseLeftPressed = true;
+
 					}
 					if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
 					{
+						FacePicker& fp = FacePicker::getInstance();
+						for (std::set<unsigned int>::iterator it = fp.getFacesPicked().begin(); it != fp.getFacesPicked().end(); ++it)
+						{
+							std::cout << *it << "\n";
+						}
+						std::cout << "\n";
+
 						mouseLeftPressed = false;
+
 					}
 					if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS)
 					{
@@ -249,6 +260,7 @@ namespace CG
 
 		glfwSetCharCallback(mainWindow, charCallback);
 
+		
 		return true;
 	}
 
@@ -301,6 +313,22 @@ namespace CG
 		glViewport(0, 0, display_w, display_h);
 
 		mainScene->Render(timeNow, timeDelta, display_w, display_h);
+	}
+
+	void App::chooseFace(GLFWwindow* window)
+	{
+		App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+		FacePicker& fp = FacePicker::getInstance();
+
+		double x, y;
+		glfwGetCursorPos(window, &x, &y);
+		fp.chooseFace(
+			x,
+			y,
+			*app->getMainScene()->getCamera().GetViewMatrix(),
+			*app->getMainScene()->getCamera().GetProjectionMatrix(),
+			app->getMainScene()->getFaceIDTextureID()
+		);
 	}
 
 	void App::GLInit()

@@ -20,7 +20,6 @@ namespace CG
 	{
 		xpos = 0;
 		ypos = 0;
-		isClicked = false;
 		camera.LookAt(glm::vec3(0, -20, 40), glm::vec3(0, -20, 0), glm::vec3(0, 1, 0));
 
 		/*
@@ -55,39 +54,6 @@ namespace CG
 
 		mesh->Render(*camera.GetProjectionMatrix(), *camera.GetViewMatrix());
 	}
-
-	void MainScene::chooseFace(double _xpos, double _ypos)
-	{
-		xpos = _xpos;
-		ypos = _ypos;
-
-		float depthVal = 0;
-		double windowX = xpos;
-		double windowY = 720 - ypos;
-		GLCall(glReadPixels(windowX, windowY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depthVal));
-
-		GLint _viewPort[4];
-		GLCall(glGetIntegerv(GL_VIEWPORT, _viewPort));
-		glm::vec4 viewport(_viewPort[0], _viewPort[1], _viewPort[2], _viewPort[3]);
-		glm::vec3 windowPos(windowX, windowY, depthVal);
-		glm::vec3 wp = glm::unProject(windowPos, *camera.GetViewMatrix(), *camera.GetProjectionMatrix(), viewport);
-
-		unsigned int idx;
-		GLCall(glGetTextureSubImage(mesh->getFboColor(), 0, static_cast<GLint>(windowX), static_cast<GLint>(windowY), 0, 1, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, sizeof(unsigned int), &idx));
-		//idx -= 1;
-		GLCall(glBindFramebuffer(GL_READ_FRAMEBUFFER, 0));
-
-		std::cout << "Picked Face ID: " << idx << std::endl;
-	}
-
-	void MainScene::OnClick(int button, int action, double _xpos, double _ypos)
-	{
-		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-		{
-			chooseFace(_xpos, _ypos);
-		}
-	}
-
 	
 	auto MainScene::loadScene(int display_w, int display_h) -> bool
 	{

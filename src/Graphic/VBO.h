@@ -26,6 +26,7 @@ public:
 	void bind() const;
 	void unbind() const;
 	void setData(const std::vector<T>& v, GLuint usageMode);
+	void setSubData(unsigned int offset, unsigned int count, std::vector<T>& data);
 };
 
 template<class T>
@@ -97,3 +98,11 @@ inline void VBO<T>::setData(const std::vector<T>& v, GLuint usageMode)
 	GLCall(glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(T), v.data(), usageMode));
 	this->size = v.size();
 }
+
+template<class T>
+inline void VBO<T>::setSubData(unsigned int offset, unsigned int count, std::vector<T>& data)
+{
+	GLCall(glBindBuffer(GL_ARRAY_BUFFER, this->id));
+	GLCall(glBufferSubData(GL_ARRAY_BUFFER, offset * sizeof(T), count * sizeof(T), data.data()));
+}
+
