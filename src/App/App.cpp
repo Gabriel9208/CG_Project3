@@ -135,7 +135,8 @@ namespace CG
 		}
 	}
 
-	App::App()
+	App::App(): width(1280), height(720)
+
 	{
 		gui = nullptr;
 		mainWindow = nullptr;
@@ -162,7 +163,7 @@ namespace CG
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
 		// Create window with graphics context
-		int display_w = 1280, display_h = 720;
+		unsigned int display_w = width, display_h = height;
 		mainWindow = glfwCreateWindow(display_w, display_h, "Group6", nullptr, nullptr);
 		if (mainWindow == nullptr)
 			return false;
@@ -189,6 +190,14 @@ namespace CG
 		gui = new GUI(mainWindow, mainScene);
 
 		glfwSetWindowUserPointer(mainWindow, this);
+		glfwSetFramebufferSizeCallback(mainWindow,
+			[](GLFWwindow* window, int w, int h) {
+				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
+				auto mainScene = app->getMainScene();
+				
+				app->resizeWindow(w, h);
+			}
+		);
 
 		glfwSetMouseButtonCallback(mainWindow,
 			[](GLFWwindow* window, int button, int action, int mods)
@@ -323,12 +332,20 @@ namespace CG
 		double x, y;
 		glfwGetCursorPos(window, &x, &y);
 		fp.chooseFace(
+			height,
 			x,
 			y,
 			*app->getMainScene()->getCamera().GetViewMatrix(),
 			*app->getMainScene()->getCamera().GetProjectionMatrix(),
 			app->getMainScene()->getFaceIDTextureID()
 		);
+	}
+
+	void App::resizeWindow(unsigned int w, unsigned int h)
+	{
+		width = w;
+		height = h;
+		mainScene->getMesh()->resizeTextureRBO(width, height);
 	}
 
 	void App::GLInit()

@@ -6,7 +6,7 @@
 
 namespace CG
 {
-	FacePicker::FacePicker() : defaultLineColor(1, 1, 1), selectedLineColor(1, 0, 0), canHighlightEdge(false), mesh(nullptr)
+	FacePicker::FacePicker() : defaultLineColor(0, 0, 0), selectedLineColor(1, 0, 0), canHighlightEdge(false), mesh(nullptr)
 	{}
 
 	FacePicker FacePicker::instance;
@@ -21,11 +21,11 @@ namespace CG
 		mesh = target;
 	}
 
-	void FacePicker::chooseFace(double _xpos, double _ypos, glm::mat4 view, glm::mat4 proj, GLuint textureID)
+	void FacePicker::chooseFace(unsigned int height, double _xpos, double _ypos, glm::mat4 view, glm::mat4 proj, GLuint textureID)
 	{
 		float depthVal = 0;
 		double windowX = _xpos;
-		double windowY = 720 - _ypos;
+		double windowY = height - _ypos;
 		GLCall(glReadPixels(windowX, windowY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depthVal));
 
 		GLint _viewPort[4];

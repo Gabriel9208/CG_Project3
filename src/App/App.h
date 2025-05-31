@@ -25,8 +25,10 @@ namespace CG
         void terminate();
 
         void chooseFace(GLFWwindow* window);
-
+        void resizeWindow(unsigned int w, unsigned int h);
         inline MainScene* getMainScene() { return mainScene; }
+        inline void setWidth(unsigned int w) { width = w; }
+        inline void setHeight(unsigned int h) { height = h; }
 
     private:
         void render();
@@ -39,6 +41,8 @@ namespace CG
         double timeNow = 0;
         double timeLast = 0;
         double timeDelta = 0;
+
+        unsigned int width, height;
 
         static int mode; // 0: showcase, 1: animation, 2: edit
     };

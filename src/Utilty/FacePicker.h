@@ -34,7 +34,7 @@ namespace CG
 		static FacePicker& getInstance();
 
 		void registerToMesh(MyMesh* target);
-		void chooseFace(double _xpos, double _ypos, glm::mat4 view, glm::mat4 proj, GLuint textureID);
+		void chooseFace(unsigned int height, double _xpos, double _ypos, glm::mat4 view, glm::mat4 proj, GLuint textureID);
 		void clearPickedFaces();
 		void clearColoredEdge(MyMesh::EdgeHandle eh);
 

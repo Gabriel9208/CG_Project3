@@ -10,6 +10,7 @@ private:
 public:
 	UnsignedIntTexture() : Texture(), width(0), height(0) {}
 	~UnsignedIntTexture() {};
-	void setup(unsigned int width, unsigned int height);
 
+	void setup(unsigned int width, unsigned int height);
+	void resize(unsigned int width, unsigned int height);
 };

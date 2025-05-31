@@ -52,7 +52,10 @@ namespace CG
 		bool LoadFromFile(std::string filename);
 
 		void Render(const glm::mat4 proj, const glm::mat4 view);
+
 		void setWVBOcSubData(unsigned int offset, unsigned int count, std::vector<glm::vec3>* data);
+		void resizeTextureRBO(unsigned int w, unsigned int h);
+
 		inline GLuint getFboColor() { return uintFaceIDTexture.getId(); }
 
 	private:

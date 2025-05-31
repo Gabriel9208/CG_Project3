@@ -121,6 +121,20 @@ namespace CG
 		wVBOc.setSubData(offset, count, *data);
 	}
 
+	void MyMesh::resizeTextureRBO(unsigned int w, unsigned int h)
+	{
+		// update texture and rbo size
+		uintFaceIDTexture.resize(w, h);
+
+		fFBO.bind();
+		GLCall(glBindRenderbuffer(GL_RENDERBUFFER, RBO));
+		GLCall(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, w, h));
+		GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RBO));
+		GLCall(glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, uintFaceIDTexture.getId(), 0));
+		fFBO.unbind();
+
+	}
+
 	void MyMesh::CreateBuffers()
 	{
 #pragma region Phong Shader
@@ -266,7 +280,6 @@ namespace CG
 		GLCall(glBindRenderbuffer(GL_RENDERBUFFER, RBO));
 		GLCall(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1280, 720));
 		GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RBO));
-
 		GLCall(glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, uintFaceIDTexture.getId(), 0));
 
 		GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
