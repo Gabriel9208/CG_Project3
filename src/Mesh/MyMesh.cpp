@@ -1,17 +1,18 @@
 #include <OpenMesh/Core/IO/MeshIO.hh>
 
 #include "MyMesh.h"
+#include "../Utilty/FacePicker.h"
 #include "../Utilty/Error.h"
 
 namespace CG
 {
 	MyMesh::MyMesh() :
 		fVAO(), fFBO(), uintFaceIDTexture(), RBO(0), fVBO(), fVBOp(), fUBO(),
-		programFaceID(), fMatVPID(-1), fModelID(-1),
+		programFaceID(), fModelID(-1),
 		sVAO(), sVBOp(), sVBOn(), sUBO(),
 		wVAO(), wVBOp(), wVBOn(), wUBO(),
-		programPhong(), pMatVPID(-1), pModelID(-1),	pMatKaID(-1), pMatKdID(-1),	pMatKsID(-1),
-		programLine(), lMatVPID(-1), lModelID(-1), lMatKdID(-1)
+		programPhong(), pModelID(-1),	pMatKaID(-1), pMatKdID(-1),	pMatKsID(-1),
+		programLine(), lModelID(-1), lMatKdID(-1)
 	{
 		model = glm::mat4(1.0);
 
@@ -40,6 +41,10 @@ namespace CG
 			}
 
 			CreateBuffers();
+		}
+
+		if (!has_edge_colors()) { 
+			request_edge_colors(); 
 		}
 
 		return isRead;
@@ -111,19 +116,23 @@ namespace CG
 		GLCall(glUseProgram(0));
 	}
 
+	void MyMesh::setWVBOcSubData(unsigned int offset, unsigned int count, std::vector<glm::vec3>* data)
+	{
+		wVBOc.setSubData(offset, count, *data);
+	}
+
 	void MyMesh::CreateBuffers()
 	{
 #pragma region Phong Shader
 		ShaderInfo shadersPhong[] = {
-			{ GL_VERTEX_SHADER, "./res/shaders/DSPhong_Material.vp" }, //vertex shader
-			{ GL_FRAGMENT_SHADER, "./res/shaders/DSPhong_Material.fp" }, //fragment shader
+			{ GL_VERTEX_SHADER, "../../res/shaders/DSPhong_Material.vp" }, //vertex shader
+			{ GL_FRAGMENT_SHADER, "../../res/shaders/DSPhong_Material.fp" }, //fragment shader
 			{ GL_NONE, NULL } };
 
 		programPhong.load(shadersPhong);//Ūshader
 
 		programPhong.use();
 
-		pMatVPID = glGetUniformBlockIndex(programPhong.getId(), "MatVP");
 		pModelID = glGetUniformLocation(programPhong.getId(), "Model");
 		pMatKaID = glGetUniformLocation(programPhong.getId(), "Material.Ka");
 		pMatKdID = glGetUniformLocation(programPhong.getId(), "Material.Kd");
@@ -132,28 +141,26 @@ namespace CG
 
 #pragma region Line Shader
 		ShaderInfo shadersLine[] = {
-			{ GL_VERTEX_SHADER, "./res/shaders/line.vp" },//vertex shader
-			{ GL_FRAGMENT_SHADER, "./res/shaders/line.fp" },//fragment shader
+			{ GL_VERTEX_SHADER, "../../res/shaders/line.vp" },//vertex shader
+			{ GL_FRAGMENT_SHADER, "../../res/shaders/line.fp" },//fragment shader
 			{ GL_NONE, NULL } };
 		programLine.load(shadersLine);//Ūshader
 
 		programLine.use();
 
-		lMatVPID = glGetUniformBlockIndex(programLine.getId(), "MatVP");
 		lModelID = glGetUniformLocation(programLine.getId(), "Model");
 		lMatKdID = glGetUniformLocation(programLine.getId(), "Material.Kd");
 #pragma endregion
 
 #pragma region faceID Shader
 		ShaderInfo shadersFace[] = {
-			{ GL_VERTEX_SHADER, "./res/shaders/faceid.vp" },//vertex shader
-			{ GL_FRAGMENT_SHADER, "./res/shaders/faceid.fp" },//fragment shader
+			{ GL_VERTEX_SHADER, "../../res/shaders/faceid.vp" },//vertex shader
+			{ GL_FRAGMENT_SHADER, "../../res/shaders/faceid.fp" },//fragment shader
 			{ GL_NONE, NULL } };
 		programFaceID.load(shadersFace);
 
 		programFaceID.use();
 
-		fMatVPID = glGetUniformBlockIndex(programFaceID.getId(), "MatVP");
 		fModelID = glGetUniformLocation(programFaceID.getId(), "Model");
 #pragma endregion
 
@@ -215,32 +222,42 @@ namespace CG
 		sUBO.associateWithShaderBlock(programLine.getId(), "MatVP", 0);
 
 		// triangle vertex index
+		FacePicker& fp = FacePicker::getInstance();
 		std::vector<glm::vec3> edge_vertices;
 		std::vector<glm::vec3> edge_normals;
-		for (EdgeHandle e : this->edges())
+		std::vector<glm::vec3> edge_colors;
+		for (EdgeHandle e : edges())
 		{
+			set_color(e, fp.getDefaultEdgeColor());
 			HalfedgeHandle he = this->halfedge_handle(e, 0);
 			edge_vertices.push_back(d2f(point(from_vertex_handle(he))));
 			edge_vertices.push_back(d2f(point(to_vertex_handle(he))));
 			edge_normals.push_back(d2f(normal(e)));
 			edge_normals.push_back(d2f(normal(e)));
+			edge_colors.push_back(f2f(color(e)));
+			edge_colors.push_back(f2f(color(e)));
 		}
 
-		wVBOp.bind();
 		wVBOp.initialize(edge_vertices, GL_STATIC_DRAW);
 		GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0));
 		GLCall(glEnableVertexAttribArray(0));
 		wVBOp.unbind();
 
-		wVBOn.bind();
-		wVBOn.initialize(edge_vertices, GL_STATIC_DRAW);
+		wVBOn.initialize(edge_normals, GL_STATIC_DRAW);
 		GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0));
 		GLCall(glEnableVertexAttribArray(1));
 		wVBOn.unbind();
 
+		wVBOc.initialize(edge_colors, GL_STATIC_DRAW) ;
+		GLCall(glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0));
+		GLCall(glEnableVertexAttribArray(2));
+		wVBOc.unbind();
+
 		wVAO.unbind();
 #pragma endregion
 		
+#pragma region FaceID Rendering
+
 		fFBO.bind();
 
 		uintFaceIDTexture.setup(1280, 720);
@@ -261,32 +278,22 @@ namespace CG
 
 			MyMesh::ConstFaceVertexCCWIter v_it = this->cfv_ccwbegin(fh);
 			VertexHandle first = *v_it;
-            ++v_it;
-            uint face_triangles = this->valence(fh) - 2;
-            for (uint j = 0; j < face_triangles; ++j)
-            {
-                // 第一個頂點
-                face_vertices_for_id_pass.push_back(d2f(point(first)));
-                vertex_face_ids.push_back(current_face_id);
+            
+            face_vertices_for_id_pass.push_back(d2f(point(first)));
+            vertex_face_ids.push_back(current_face_id);
+			
+			++v_it;
+            face_vertices_for_id_pass.push_back(d2f(point(*v_it)));
+            vertex_face_ids.push_back(current_face_id);
 
-                // 第二個頂點
-                face_vertices_for_id_pass.push_back(d2f(point(*v_it)));
-                vertex_face_ids.push_back(current_face_id);
-
-                // 第三個頂點 (如果不是第一個三角形，則 it 已經被 ++ 過)
-                if (j == 0) ++v_it; // 只有第一個三角形需要移動it到第三個頂點
-                face_vertices_for_id_pass.push_back(d2f(point(*v_it)));
-                vertex_face_ids.push_back(current_face_id);
-
-                if (j > 0) ++v_it; // 後續三角形的第三個頂點需要移動it
-            }
+            ++v_it; 
+            face_vertices_for_id_pass.push_back(d2f(point(*v_it)));
+            vertex_face_ids.push_back(current_face_id);
 		}
 		
 		fVAO.bind();
 		
 		fUBO.initialize(sizeof(glm::mat4) * 2);
-		
-		// get uniform struct size
 		fUBO.associateWithShaderBlock(programFaceID.getId(), "MatVP", 0);
 
 		fVBOp.initialize(face_vertices_for_id_pass, GL_STATIC_DRAW);
@@ -300,6 +307,9 @@ namespace CG
 		fUBO.unbind();
 		fVBO.unbind();
 		fVAO.unbind();
+
+#pragma endregion
+
 	}
 
 	OpenMesh::Vec3d MyMesh::normal(const HalfedgeHandle he) const
@@ -345,6 +355,10 @@ namespace CG
 	}
 
 	glm::vec3 MyMesh::d2f(OpenMesh::Vec3d v)
+	{
+		return glm::vec3(v[0], v[1], v[2]);
+	}
+	glm::vec3 MyMesh::f2f(OpenMesh::Vec3f v)
 	{
 		return glm::vec3(v[0], v[1], v[2]);
 	}

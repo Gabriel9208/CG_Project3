@@ -24,11 +24,12 @@ namespace CG
         void loop();
         void terminate();
 
+        void chooseFace(GLFWwindow* window);
+
         inline MainScene* getMainScene() { return mainScene; }
 
     private:
         void render();
-
         void GLInit();
 
         GLFWwindow* mainWindow;

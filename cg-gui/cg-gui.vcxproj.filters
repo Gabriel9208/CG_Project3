@@ -77,6 +77,9 @@
     <ClCompile Include="..\src\Graphic\Material\UnsignedIntTexture.cpp">
       <Filter>Graphic\Material</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Utilty\FacePicker.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -195,6 +198,9 @@
     <ClInclude Include="..\src\stb_image.h" />
     <ClInclude Include="..\src\Graphic\Material\UnsignedIntTexture.h">
       <Filter>Graphic\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Utilty\FacePicker.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
