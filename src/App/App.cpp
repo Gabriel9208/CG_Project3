@@ -222,15 +222,7 @@ namespace CG
 					}
 					if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
 					{
-						FacePicker& fp = FacePicker::getInstance();
-						for (std::set<unsigned int>::iterator it = fp.getFacesPicked().begin(); it != fp.getFacesPicked().end(); ++it)
-						{
-							std::cout << *it << "\n";
-						}
-						std::cout << "\n";
-
 						mouseLeftPressed = false;
-
 					}
 					if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS)
 					{

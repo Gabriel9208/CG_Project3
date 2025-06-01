@@ -12,25 +12,6 @@
 
 namespace CG
 {
-	/* DefaultTraits
-	struct DefaultTraits
-	{
-	  typedef Vec3f  Point;
-	  typedef Vec3f  Normal;
-	  typedef Vec2f  TexCoord;
-	  typedef Vec3uc Color;
-	  VertexTraits    {};
-	  HalfedgeTraits  {};
-	  EdgeTraits      {};
-	  FaceTraits      {};
-	  
-	  VertexAttributes(0);
-	  HalfedgeAttributes(Attributes::PrevHalfedge);
-	  EdgeAttributes(0);
-	  FaceAttributes(0);
-	};
-	*/
-
 	struct MyTraits : OpenMesh::DefaultTraits
 	{
 		using Point = OpenMesh::Vec3d;
@@ -38,9 +19,14 @@ namespace CG
 		using Color = OpenMesh::Vec3f;
 
 		// Add normal property to vertices and faces
-		VertexAttributes(OpenMesh::Attributes::Normal);
+		VertexAttributes(OpenMesh::Attributes::Normal | OpenMesh::Attributes::TexCoord2D );
 		FaceAttributes(OpenMesh::Attributes::Normal);
 		EdgeAttributes(OpenMesh::Attributes::Color);
+
+		VertexTraits
+		{
+		  double weight;
+		};
 	};
 
 	class MyMesh : public OpenMesh::TriMesh_ArrayKernelT<MyTraits>

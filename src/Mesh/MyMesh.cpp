@@ -132,7 +132,6 @@ namespace CG
 		GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RBO));
 		GLCall(glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, uintFaceIDTexture.getId(), 0));
 		fFBO.unbind();
-
 	}
 
 	void MyMesh::CreateBuffers()
