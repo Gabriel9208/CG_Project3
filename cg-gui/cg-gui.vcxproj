@@ -159,6 +159,7 @@
     <ClCompile Include="..\src\Graphic\UBO.cpp" />
     <ClCompile Include="..\src\Graphic\VAO.cpp" />
     <ClCompile Include="..\src\Mesh\MyMesh.cpp" />
+    <ClCompile Include="..\src\Mesh\Patch.cpp" />
     <ClCompile Include="..\src\Scene\Camera.cpp" />
     <ClCompile Include="..\src\Scene\Light.cpp" />
     <ClCompile Include="..\src\Scene\MainScene.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="..\src\Graphic\VAO.h" />
     <ClInclude Include="..\src\Graphic\VBO.h" />
     <ClInclude Include="..\src\Mesh\MyMesh.h" />
+    <ClInclude Include="..\src\Mesh\Patch.h" />
     <ClInclude Include="..\src\Scene\Camera.h" />
     <ClInclude Include="..\src\Scene\Light.h" />
     <ClInclude Include="..\src\Scene\MainScene.h" />

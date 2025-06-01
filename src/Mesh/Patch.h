@@ -1,6 +1,7 @@
 #pragma once
 #include "MyMesh.h"
 
+#include <vector>
 #include <set>
 
 namespace CG
@@ -14,13 +15,16 @@ namespace CG
 		std::set<OpenMesh::EdgeHandle> edges;
 		std::set<OpenMesh::VertexHandle> vertices;
 
-		std::set<OpenMesh::EdgeHandle> boundarys;
+		std::set<OpenMesh::EdgeHandle> boundaryEdges;
+		std::vector<OpenMesh::HalfedgeHandle> orderedBoundaryEdges;
 
 	public:
-		Patch(MyMesh* mesh, std::set<unsigned int> faceId);
+		Patch(MyMesh* mesh, std::set<unsigned int>& faceId);
 		~Patch() {}
 
+		void loadSets(std::set<unsigned int>& faceId);
 		void identifyBoundary();
+		void generateOrderedBoundary();
 	};
 
 }

@@ -80,6 +80,9 @@
     <ClCompile Include="..\src\Utilty\FacePicker.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Mesh\Patch.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -201,6 +204,9 @@
     </ClInclude>
     <ClInclude Include="..\src\Utilty\FacePicker.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Mesh\Patch.h">
+      <Filter>Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
