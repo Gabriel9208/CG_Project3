@@ -1,5 +1,6 @@
 #pragma once
 #include "../Mesh/MyMesh.h"
+#include "../Mesh/Patch.h"
 
 #include <OpenMesh/Core/Mesh/TriMesh_ArrayKernelT.hh>
 #include <glm/glm.hpp>
@@ -15,8 +16,8 @@ namespace CG
 		static FacePicker instance;
 
 		MyMesh* mesh;
+		Patch* patch;
 		std::set<unsigned int> pickedFaces;
-		std::vector<glm::vec3> VertexToBeColored;
 
 		OpenMesh::Vec3f defaultLineColor;
 		OpenMesh::Vec3f selectedLineColor;
@@ -39,7 +40,6 @@ namespace CG
 		void clearColoredEdge(MyMesh::EdgeHandle eh);
 
 		inline std::set<unsigned int>& getFacesPicked() { return pickedFaces; }
-		inline std::vector<glm::vec3>& getPointsToBeColored() {return VertexToBeColored;}
 		inline OpenMesh::Vec3f getDefaultEdgeColor() const { return defaultLineColor; }
 		inline OpenMesh::Vec3f getHightlightEdgeColor() const { return selectedLineColor; }
 	};

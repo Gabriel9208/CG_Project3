@@ -59,6 +59,8 @@ namespace CG
 				}
 			}
 		}
+
+		patch = new Patch(mesh, pickedFaces);
 	}
 
 
@@ -86,7 +88,7 @@ namespace CG
 			}
 		}
 		pickedFaces.clear(); 
-		VertexToBeColored.clear();
+		delete patch;
 		canHighlightEdge = false;
 	}
 
