@@ -2,6 +2,8 @@
 #include "Camera.h"
 #include "../Graphic/ShaderProgram/GraphicShader.h"
 #include "../Graphic/UBO.h"
+#include "../Mesh/Patch.h"
+
 #include <array>
 #include <string>
 #include <map>
@@ -40,6 +42,7 @@ namespace CG
 
 		Camera camera;
 		MyMesh* mesh;
+		Patch* patch;
 
 		double xpos;
 		double ypos;

@@ -7,7 +7,7 @@ namespace CG
 		return glm::vec3(v[0], v[1], v[2]);;
 	}
 
-	Patch::Patch(MyMesh* mesh, std::set<unsigned int>& faceId): borderColor(0, 0, 1), defaultLineColor(1, 1, 1)
+	Patch::Patch(MyMesh* mesh, std::set<unsigned int>& faceId): borderColor(0, 0, 1), defaultLineColor(0, 0, 0)
 	{
 		referenceMesh = mesh;
 		loadSets(faceId);

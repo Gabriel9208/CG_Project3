@@ -8,6 +8,7 @@
 
 #include "App.h"
 #include "../Utilty/FacePicker.h"
+#include "../Utilty/TextureMapper.h"
 
 namespace CG
 {
@@ -215,8 +216,8 @@ namespace CG
 					{
 						FacePicker& fp = FacePicker::getInstance();
 						fp.clearPickedFaces();
-						app->chooseFace(window);
 
+						app->chooseFace(window);
 						mouseLeftPressed = true;
 
 					}
@@ -318,6 +319,11 @@ namespace CG
 
 	void App::chooseFace(GLFWwindow* window)
 	{
+		if (patch != nullptr)
+		{
+			delete patch;
+		}
+
 		App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
 		FacePicker& fp = FacePicker::getInstance();
 
@@ -331,6 +337,11 @@ namespace CG
 			*app->getMainScene()->getCamera().GetProjectionMatrix(),
 			app->getMainScene()->getFaceIDTextureID()
 		);
+
+		patch = new Patch(mainScene->getMesh(), fp.getFacesPicked());
+
+		TextureMapper& tm = TextureMapper::getInstance();
+		tm.Map(mainScene->getMesh(), patch->getOrderedBoundaryEdges(), &patch->getVertices());
 	}
 
 	void App::resizeWindow(unsigned int w, unsigned int h)

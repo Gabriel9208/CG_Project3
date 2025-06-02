@@ -4,6 +4,9 @@
 #include <vector>
 #include <set>
 
+// chord length parameterization
+// reference from https://graphics.stanford.edu/courses/cs468-10-fall/LectureSlides/12_Parameterization1.pdf
+
 namespace CG
 {
 	class Patch
@@ -31,6 +34,9 @@ namespace CG
 		void identifyBoundary();
 		void generateOrderedBoundary();
 		void clear();
+
+		inline std::vector<OpenMesh::HalfedgeHandle>& getOrderedBoundaryEdges() { return orderedBoundaryEdges; }
+		inline std::set<OpenMesh::VertexHandle>& getVertices() { return vertices; }
 	};
 
 }

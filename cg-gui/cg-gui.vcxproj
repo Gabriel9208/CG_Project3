@@ -86,6 +86,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\yen08\Desktop\CG_Project\CG_Project3\lib\eigen-3.4.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -100,6 +101,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\yen08\Desktop\CG_Project\CG_Project3\lib\eigen-3.4.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -165,6 +167,7 @@
     <ClCompile Include="..\src\Scene\MainScene.cpp" />
     <ClCompile Include="..\src\Utilty\Error.cpp" />
     <ClCompile Include="..\src\Utilty\FacePicker.cpp" />
+    <ClCompile Include="..\src\Utilty\TextureMapper.cpp" />
     <ClCompile Include="..\src\Window\GUI.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -198,6 +201,7 @@
     <ClInclude Include="..\src\stb_image.h" />
     <ClInclude Include="..\src\Utilty\Error.h" />
     <ClInclude Include="..\src\Utilty\FacePicker.h" />
+    <ClInclude Include="..\src\Utilty\TextureMapper.h" />
     <ClInclude Include="..\src\Window\GUI.h" />
   </ItemGroup>
   <ItemGroup>

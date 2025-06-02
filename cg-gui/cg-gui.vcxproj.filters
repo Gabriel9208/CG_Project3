@@ -83,6 +83,9 @@
     <ClCompile Include="..\src\Mesh\Patch.cpp">
       <Filter>Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Utilty\TextureMapper.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -207,6 +210,9 @@
     </ClInclude>
     <ClInclude Include="..\src\Mesh\Patch.h">
       <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Utilty\TextureMapper.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
