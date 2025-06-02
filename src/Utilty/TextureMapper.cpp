@@ -30,6 +30,7 @@ namespace CG
 		// clear state
 		orderedBoundaryVertex.clear();
 		boundaryUV.clear();
+		allUV.clear();
 		referenceMesh = mesh;
 		vertices = _vertices;
 
@@ -117,8 +118,8 @@ namespace CG
 		
 		if (DIMENTION == 0)
 		{
-			verticesUV = boundaryUV;
-			return false;
+			allUV = boundaryUV;
+			return;
 		}
 
 		Eigen::SparseMatrix<double> matrixA(DIMENTION, DIMENTION); // main matrix to be calculated	
@@ -220,7 +221,7 @@ namespace CG
 		Eigen::VectorXd innerU = solver.solve(vectorU);
 		if (solver.info() != Eigen::Success) {
 			std::cerr << "Eigen solve for innerU failed!" << std::endl;
-			return false;
+			return;
 		}
 
 		Eigen::VectorXd innerV = solver.solve(vectorV);

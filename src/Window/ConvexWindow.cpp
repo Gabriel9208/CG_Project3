@@ -101,7 +101,7 @@ namespace CG
 		// Set viewport to match framebuffer size
 		GLCall(glViewport(0, 0, display_w, display_h));
 
-		GLCall(glClearColor(1, 1, 1, 1));
+		GLCall(glClearColor(0, 0, 0, 1));
 		GLCall(glDisable(GL_DEPTH_TEST));
 		GLCall(glClear(GL_COLOR_BUFFER_BIT));		
 
@@ -127,7 +127,7 @@ namespace CG
 	void ConvexWindow::updateGraph()
 	{
 		TextureMapper& tm = TextureMapper::getInstance();
-		std::map<OpenMesh::VertexHandle, OpenMesh::Vec2d> vhMapVec2d = tm.getResult();
+		std::map<OpenMesh::VertexHandle, OpenMesh::Vec2d> vhMapVec2d = tm.getAllUVMap();
 
 		std::vector<glm::vec2> points;
 		std::set<OpenMesh::Vec2d> used;
