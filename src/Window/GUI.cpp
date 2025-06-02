@@ -6,6 +6,7 @@
 #include "glm/gtx/string_cast.hpp"
 #include "../App/App.h"
 #include "../Utilty/Error.h"
+#include "../Utilty/FacePicker.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -85,11 +86,32 @@ namespace CG {
     {
         ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
         ImGui::SetNextWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x * 0.2, ImGui::GetIO().DisplaySize.y), ImGuiCond_Always);
+        ImGui::Begin("Configurations", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+        if (ImGui::CollapsingHeader("Objects Visibility", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            pickerPanel();
+        }
+        
+        ImGui::End();
     }
 
     void GUI::_render()
     {
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
+
+    void GUI::pickerPanel()
+    {
+        ImGui::SeparatorText("Usage");
+        ImGui::Text("Set the range of pick.\n");
+
+        FacePicker& fp = FacePicker::getInstance();
+        int range = fp.getRange();
+        if (ImGui::DragInt("    ", &range, 0.5f, 0, 500, "%d"))
+        {
+            fp.setRange(range);
+        }
     }
 }

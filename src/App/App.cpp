@@ -218,6 +218,10 @@ namespace CG
 					if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 					{
 						FacePicker& fp = FacePicker::getInstance();
+
+						if (!(mods & GLFW_MOD_SHIFT))
+							fp.clearPickedFaces();
+
 						fp.clearPickedFaces();
 						app->patch->clear();
 						app->chooseFace(window);

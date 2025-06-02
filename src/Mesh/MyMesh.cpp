@@ -3,6 +3,7 @@
 #include "MyMesh.h"
 #include "../Utilty/FacePicker.h"
 #include "../Utilty/Error.h"
+#include "../Utilty/TextureMapper.h"
 
 namespace CG
 {
@@ -27,7 +28,7 @@ namespace CG
 
 	}
 
-	bool MyMesh::LoadFromFile(std::string filename)
+	bool MyMesh::LoadFromFile(std::string filename, int display_w, int display_h)
 	{
 		OpenMesh::IO::Options opt = OpenMesh::IO::Options::VertexNormal;
 		bool isRead = OpenMesh::IO::read_mesh(*this, filename, opt);
@@ -41,6 +42,16 @@ namespace CG
 			}
 
 			CreateBuffers();
+
+			glGenTextures(1, &baseTexture);
+			glBindTexture(GL_TEXTURE_2D, baseTexture);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, display_w, display_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			glGenFramebuffers(1, &decalFBO);
+			glBindFramebuffer(GL_FRAMEBUFFER, decalFBO);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, baseTexture, 0);
 		}
 
 		if (!has_edge_colors()) { 
@@ -110,6 +121,108 @@ namespace CG
 		GLCall(glDrawArrays(GL_LINES, 0, this->n_edges() * 2));
 #pragma endregion
 
+#pragma region Texture Rendering
+
+		programTex.use();
+		tVAO.bind();
+
+		GLCall(glUniformMatrix4fv(tModelID, 1, GL_FALSE, &model[0][0]));
+		GLCall(glUniform3fv(tMatKaID, 1, &colorAmbient[0]));
+		GLCall(glUniform3fv(tMatKdID, 1, &colorDiffuse[0]));
+		GLCall(glUniform3fv(tMatKsID, 1, &colorSpecular[0]));
+
+		// update data to UBO for MVP
+		tUBO.bind();
+		tUBO.fillInData(0, sizeof(glm::mat4), &view);
+		tUBO.fillInData(sizeof(glm::mat4), sizeof(glm::mat4), &proj);
+
+		TextureMapper& tm = TextureMapper::getInstance();
+		FacePicker& fp = FacePicker::getInstance();
+		auto pickedFaces = fp.getFacesPicked();
+
+		std::vector<glm::vec3> positions;
+		std::vector<glm::vec2> uvCoords;
+		std::vector<glm::vec3> faceNormals;
+
+		const auto& uvMap = tm.getAllUVMap();
+
+		for (auto faceId = pickedFaces.begin(); faceId != pickedFaces.end(); ++faceId)
+		{
+			OpenMesh::FaceHandle fh = face_handle(*faceId);
+
+			std::vector<OpenMesh::VertexHandle> vhandles;
+
+			for (MyMesh::FaceVertexIter fv_it = fv_iter(fh); fv_it.is_valid(); ++fv_it)
+			{
+				vhandles.push_back(*fv_it);
+			}
+
+			if (vhandles.size() == 3)
+			{
+				glm::vec3 p[3];
+
+				for (int i = 0; i < 3; ++i)
+				{
+					auto vh = vhandles[i];
+					auto pos = point(vh);
+					p[i] = glm::vec3(pos[0], pos[1], pos[2]);
+
+					positions.push_back(p[i]);
+
+					auto it = uvMap.find(vh);
+					if (it != uvMap.end())
+						uvCoords.emplace_back(it->second[0], it->second[1]);
+					else
+						uvCoords.emplace_back(0.0f, 0.0f);
+				}
+
+				glm::vec3 edge1 = p[1] - p[0];
+				glm::vec3 edge2 = p[2] - p[0];
+				glm::vec3 normal = glm::normalize(glm::cross(edge1, edge2));
+
+				faceNormals.push_back(normal);
+				faceNormals.push_back(normal);
+				faceNormals.push_back(normal);
+			}
+		}
+
+		if (positions.size() > 0)
+		{
+			tVBOp.bind();
+			tVBOp.initialize(positions, GL_DYNAMIC_DRAW);
+			GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0));
+			GLCall(glEnableVertexAttribArray(0));
+			tVBOp.unbind();
+
+			tVBOn.bind();
+			tVBOn.initialize(faceNormals, GL_DYNAMIC_DRAW);
+			GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0));
+			GLCall(glEnableVertexAttribArray(1));
+			tVBOn.unbind();
+
+			tVBOu.bind();
+			tVBOu.initialize(uvCoords, GL_DYNAMIC_DRAW);
+			GLCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0));
+			GLCall(glEnableVertexAttribArray(2));
+			tVBOu.unbind();
+
+			texture.bind();
+			GLCall(glUniform1i(glGetUniformLocation(programTex.getId(), "Texture"), 0));
+			glBindTexture(GL_TEXTURE_2D, texture.getId());
+			
+			//glBindFramebuffer(GL_FRAMEBUFFER, decalFBO);
+			glEnable(GL_POLYGON_OFFSET_FILL);
+			glPolygonOffset(-1.0f, -1.0f);
+
+			// Draw texture mesh
+			GLCall(glDrawArrays(GL_TRIANGLES, 0, positions.size()));
+
+			glDisable(GL_POLYGON_OFFSET_FILL);
+			//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
+		
+#pragma endregion
+
 		// Unbind shader and VAO
 		GLCall(glBindVertexArray(0));
 		GLCall(glUseProgram(0));
@@ -163,6 +276,24 @@ namespace CG
 		lModelID = glGetUniformLocation(programLine.getId(), "Model");
 #pragma endregion
 
+#pragma region Texture Shader
+		ShaderInfo shadersTexture[] = {
+			{ GL_VERTEX_SHADER, "../../res/shaders/texture.vp" }, //vertex shader
+			{ GL_FRAGMENT_SHADER, "../../res/shaders/texture.fp" }, //fragment shader
+			{ GL_NONE, NULL } };
+
+		programTex.load(shadersTexture);//Ūshader
+
+		programTex.use();
+
+		tModelID = glGetUniformLocation(programTex.getId(), "Model");
+		tMatKaID = glGetUniformLocation(programTex.getId(), "Material.Ka");
+		tMatKdID = glGetUniformLocation(programTex.getId(), "Material.Kd");
+		tMatKsID = glGetUniformLocation(programTex.getId(), "Material.Ks");
+
+		texture.LoadTexture("../../res/texture/test2.jpg");
+#pragma endregion
+
 #pragma region faceID Shader
 		ShaderInfo shadersFace[] = {
 			{ GL_VERTEX_SHADER, "../../res/shaders/faceid.vp" },//vertex shader
@@ -174,7 +305,6 @@ namespace CG
 
 		fModelID = glGetUniformLocation(programFaceID.getId(), "Model");
 #pragma endregion
-
 
 #pragma region Solid Rendering
 		sVAO.bind();
@@ -265,6 +395,20 @@ namespace CG
 		wVBOc.unbind();
 
 		wVAO.unbind();
+#pragma endregion
+
+#pragma region Texture Rendering
+		tVAO.bind();
+
+		// UBO
+		tUBO.bind();
+		tUBO.initialize(sizeof(glm::mat4) * 2);
+
+		// bind UBO to its idx
+		tUBO.associateWithShaderBlock(programTex.getId(), "MatVP", 0);
+
+		tVAO.unbind();
+	
 #pragma endregion
 		
 #pragma region FaceID Rendering

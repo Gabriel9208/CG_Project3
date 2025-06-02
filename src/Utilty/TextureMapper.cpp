@@ -21,7 +21,7 @@ namespace CG
 		return instance;
 	}
 
-	std::map<OpenMesh::VertexHandle, OpenMesh::Vec2d>& TextureMapper::Map(
+	void TextureMapper::Map(
 		MyMesh* mesh, 
 		std::vector<OpenMesh::HalfedgeHandle>& orderedBoundaryEdges, 
 		std::set<OpenMesh::VertexHandle>* _vertices
@@ -30,7 +30,6 @@ namespace CG
 		// clear state
 		orderedBoundaryVertex.clear();
 		boundaryUV.clear();
-		verticesUV.clear();
 		referenceMesh = mesh;
 		vertices = _vertices;
 
@@ -39,11 +38,7 @@ namespace CG
 		calculateBoundaryVertexUV();
 
 		// calculate inner points
-		if (calculateInnerPointUV())
-		{
-			return verticesUV;
-		}
-		 
+		calculateInnerPointUV();
 	}
 
 	void TextureMapper::halfedgeToVertex(std::vector<OpenMesh::HalfedgeHandle>& orderedBoundaryEdges)
@@ -100,7 +95,7 @@ namespace CG
 		}
 	}
 
-	bool TextureMapper::calculateInnerPointUV()
+	void TextureMapper::calculateInnerPointUV()
 	{
 		// chaeck if all element in orderedBoundaryVertex are unique
 		std::set<OpenMesh::VertexHandle> boundaryVertex;
@@ -114,7 +109,7 @@ namespace CG
 		if (boundaryVertex.size() != orderedBoundaryVertex.size())
 		{
 			std::cout << "Element in orderedBoundaryVertex are not unique.\n";
-			return false;
+			return;
 		}
 
 		
@@ -219,7 +214,7 @@ namespace CG
 		solver.compute(matrixA); 
 		if (solver.info() != Eigen::Success) {
 			std::cerr << "Eigen decomposition failed!" << std::endl;
-			return false;
+			return;
 		}
 
 		Eigen::VectorXd innerU = solver.solve(vectorU);
@@ -230,17 +225,21 @@ namespace CG
 
 		Eigen::VectorXd innerV = solver.solve(vectorV);
 		if (solver.info() != Eigen::Success) {
-			std::cerr << "Eigen solve for innerV failed!" << std::endl;
-			return false;
+			std::cerr << "Eigen solve for innerY failed!" << std::endl;
+			return;
 		}
 
-		verticesUV = boundaryUV;
-		for (unsigned int i = 0; i < DIMENTION; i++)
+		for (auto& vh : innerVertex) 
 		{
-			verticesUV[matrixEntryIndexToVertexHandle[i]] = OpenMesh::Vec2d(innerU[i], innerV[i]);
+			unsigned int ovIdx = overallIndex[vh];
+			unsigned int matIdx = overallIndexToMatrixEntryIndex[ovIdx];
+			allUV[vh] = OpenMesh::Vec2f(innerU[matIdx], innerV[matIdx]);
 		}
 
-		return true;
+		for (auto& pair : boundaryUV) 
+		{
+			allUV[pair.first] = pair.second;
+		}
 	}
 
 	// mean-value
