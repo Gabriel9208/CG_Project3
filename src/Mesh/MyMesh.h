@@ -78,13 +78,6 @@ namespace CG
 		std::vector<glm::vec3> face_vertices_for_id_pass; // 與 face_vertices 內容和順序一致
 		GLenum DrawBuffers[1];
 
-		/* Buffers for texture rendering */
-		VAO tVAO;
-		VBO<glm::vec3> tVBOp;
-		VBO<glm::vec3> tVBOn;
-		VBO<glm::vec2> tVBOu;
-		UBO tUBO;
-
 		/* Buffers for solid rendering */
 		VAO sVAO;
 		VBO<glm::vec3> sVBOp;
@@ -97,16 +90,6 @@ namespace CG
 		VBO<glm::vec3> wVBOn;
 		VBO<glm::vec3> wVBOc; // draw selected edge
 		UBO wUBO;
-
-		/* Texture shader */
-		GraphicShader programTex;
-		GLuint tModelID;
-		GLuint tMatKaID;
-		GLuint tMatKdID;
-		GLuint tMatKsID;
-		Texture texture;
-		GLuint baseTexture;
-		GLuint decalFBO;
 
 		/* Phong shader */
 		GraphicShader programPhong;

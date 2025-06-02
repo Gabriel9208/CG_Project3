@@ -1,5 +1,6 @@
 #include "MainScene.h"
 #include "../Utilty/Error.h"
+#include "../Utilty/TexturePainter.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -44,6 +45,8 @@ namespace CG
 		GLCall(glFlush());
 
 		mesh->Render(*camera.GetProjectionMatrix(), *camera.GetViewMatrix());
+		TexturePainter& tp = TexturePainter::getInstance();
+		tp.render(*camera.GetProjectionMatrix(), *camera.GetViewMatrix());
 	}
 	
 	auto MainScene::loadScene(int display_w, int display_h) -> bool

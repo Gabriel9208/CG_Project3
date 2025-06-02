@@ -34,7 +34,6 @@ namespace CG
 
 		void init(MyMesh* mesh, std::set<unsigned int>& faceId);
 		void loadSets(std::set<unsigned int>& faceId);
-		void updateSet(unsigned int faceId);
 		void identifyBoundary();
 		void generateOrderedBoundary();
 		void clear();

@@ -46,25 +46,6 @@ namespace CG
 		}
 	}
 
-	void Patch::updateSet(unsigned int faceId)
-	{
-		OpenMesh::FaceHandle fh = referenceMesh->face_handle(faceId);
-		faces.insert(fh);
-
-		for (MyMesh::FaceEdgeIter fe_itr = referenceMesh->fe_iter(fh); fe_itr.is_valid(); fe_itr++)
-		{
-			OpenMesh::EdgeHandle eh = *fe_itr;
-			edges.insert(eh);
-
-			for (MyMesh::EdgeVertexIter ev_itr = referenceMesh->ev_iter(eh); ev_itr.is_valid(); ev_itr++)
-			{
-				OpenMesh::VertexHandle vh = *ev_itr;
-				vertices.insert(vh);
-			}
-		}
-		
-	}
-
 	void Patch::identifyBoundary()
 	{
 		for (auto eh = edges.begin(); eh != edges.end(); eh++)
@@ -96,7 +77,6 @@ namespace CG
 					referenceMesh->set_color(edge, borderColor);
 					std::vector<glm::vec3> v = { f2f(borderColor), f2f(borderColor) };
 					referenceMesh->setWVBOcSubData(edge.idx() * 2, 2, &v);
-					
 				}
 			}
 		}

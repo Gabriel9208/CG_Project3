@@ -92,6 +92,9 @@
     <ClCompile Include="..\src\Graphic\Material\ColorTexture.cpp">
       <Filter>Graphic\Material</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Utilty\TexturePainter.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -225,6 +228,9 @@
     </ClInclude>
     <ClInclude Include="..\src\Graphic\Material\ColorTexture.h">
       <Filter>Graphic\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Utilty\TexturePainter.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -98,7 +98,6 @@ namespace CG
 		fVAO.bind();
 		fFBO.bind();
 
-		// Set viewport to match framebuffer size
 		GLCall(glViewport(0, 0, display_w, display_h));
 
 		GLCall(glClearColor(0, 0, 0, 1));
@@ -111,7 +110,6 @@ namespace CG
 		GLCall(glDrawArrays(GL_LINES, 0, bufferElementCount));
 		fFBO.unbind();
 
-		// Restore viewport to main window size for final rendering
 		GLCall(glViewport(0, 0, _display_w, _display_h));
 
 		drawWindowProgram.use();

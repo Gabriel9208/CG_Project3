@@ -27,7 +27,9 @@ namespace CG {
 
 		void exportPanel();
 		void importPanel();
+
 		void pickerPanel();
+
 		void _render();
 
 	public:

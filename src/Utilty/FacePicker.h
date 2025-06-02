@@ -17,7 +17,6 @@ namespace CG
 		static FacePicker instance;
 
 		MyMesh* mesh;
-		Patch* patch;
 		std::set<unsigned int> pickedFaces;
 		unsigned int range = 0;
 

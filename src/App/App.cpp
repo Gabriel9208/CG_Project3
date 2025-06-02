@@ -9,15 +9,16 @@
 #include "App.h"
 #include "../Utilty/FacePicker.h"
 #include "../Utilty/TextureMapper.h"
+#include "../Utilty/TexturePainter.h"
 
 namespace CG
 {
 	double lastCursorX;
 	double lastCursorY;
 
-	bool mouseMiddlePressed;
-	bool mouseRightPressed;
-	bool mouseLeftPressed;
+	bool mouseMiddlePressed = false;
+	bool mouseRightPressed = false;
+	bool mouseLeftPressed = false;
 
 
 	static void keyPress(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -182,6 +183,9 @@ namespace CG
 
 		GLInit();
 		
+		TexturePainter& tp = TexturePainter::getInstance();
+		tp.init(display_w, display_h);
+
 		mainScene = new MainScene();
 		mainScene->Initialize(display_w, display_h);
 
@@ -219,10 +223,11 @@ namespace CG
 					{
 						FacePicker& fp = FacePicker::getInstance();
 
-						if (!(mods & GLFW_MOD_SHIFT))
+						if (!(mods & GLFW_MOD_SHIFT) && mouseLeftPressed == false)
+						{
 							fp.clearPickedFaces();
+						}
 
-						fp.clearPickedFaces();
 						app->patch->clear();
 						app->chooseFace(window);
 						mouseLeftPressed = true;
@@ -238,6 +243,9 @@ namespace CG
 						tm.Map(mainScene->getMesh(), app->patch->getOrderedBoundaryEdges(), &app->patch->getVertices());
 
 						app->convexWindow->updateGraph();
+
+						TexturePainter& tp = TexturePainter::getInstance();
+						tp.update(mainScene->getMesh());
 					}
 					if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS)
 					{
@@ -292,7 +300,7 @@ namespace CG
 			timeLast = timeNow;
 
 			render();
-
+		
 			gui->render();
 			
 			ImGuiIO& io = ImGui::GetIO();
