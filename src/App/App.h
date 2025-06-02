@@ -11,6 +11,9 @@
 #include "../Window/GUI.h"
 #include "Scene/MainScene.h"
 #include "../Scene/Camera.h"
+#include "../Mesh/Patch.h"
+#include "../Utilty/TextureMapper.h"
+#include "../Window/ConvexWindow.h"
 
 namespace CG
 {
@@ -26,6 +29,8 @@ namespace CG
 
         void chooseFace(GLFWwindow* window);
         void resizeWindow(unsigned int w, unsigned int h);
+
+        inline Patch* getPatch() { return patch; }
         inline MainScene* getMainScene() { return mainScene; }
         inline void setWidth(unsigned int w) { width = w; }
         inline void setHeight(unsigned int h) { height = h; }
@@ -35,8 +40,10 @@ namespace CG
         void GLInit();
 
         GLFWwindow* mainWindow;
+        ConvexWindow* convexWindow;
         MainScene* mainScene;
         GUI* gui;
+        Patch* patch;
 
         double timeNow = 0;
         double timeLast = 0;

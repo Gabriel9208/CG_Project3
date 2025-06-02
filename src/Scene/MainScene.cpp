@@ -10,6 +10,7 @@ namespace CG
 		program()
 	{
 		mesh = nullptr;
+		patch = nullptr;
 	}
 
 	MainScene::~MainScene()
@@ -20,17 +21,7 @@ namespace CG
 	{
 		xpos = 0;
 		ypos = 0;
-		camera.LookAt(glm::vec3(0, -20, 40), glm::vec3(0, -20, 0), glm::vec3(0, 1, 0));
-
-		/*
-		ShaderInfo normalShaders[] = {
-			{ GL_VERTEX_SHADER, "../../res/shaders/Phong_Vertex.vp" },
-			{ GL_FRAGMENT_SHADER, "../../res/shaders/Phong_Fragment.fp" },
-			{ GL_NONE, NULL } };
-		program.load(normalShaders);
-
-		program.use();
-		*/
+		camera.LookAt(glm::vec3(0, 20, 40), glm::vec3(0, -20, 0), glm::vec3(0, 1, 0));
 
 		return loadScene(display_w, display_h);
 	}
@@ -72,7 +63,7 @@ namespace CG
 
 
 		mesh = new MyMesh();
-		mesh->LoadFromFile("../../res/models/Armadillo.obj");
+		mesh->LoadFromFile("../../res/models/Armadillo.obj", display_w, display_h);
 
 		return true;
 	}

@@ -1,12 +1,6 @@
 #version 430
 
-struct MaterialInfo{
-	vec3 Kd;
-};
-
 in vec3 v_Color;
-
-uniform MaterialInfo Material;
 
 out vec4 vFragColor;
 

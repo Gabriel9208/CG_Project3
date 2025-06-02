@@ -86,6 +86,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\yen08\Desktop\CG_Project\CG_Project3\lib\eigen-3.4.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -100,6 +101,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\yen08\Desktop\CG_Project\CG_Project3\lib\eigen-3.4.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -149,6 +151,7 @@
     <ClCompile Include="..\src\App\App.cpp" />
     <ClCompile Include="..\src\Graphic\EBO.cpp" />
     <ClCompile Include="..\src\Graphic\FBO.cpp" />
+    <ClCompile Include="..\src\Graphic\Material\ColorTexture.cpp" />
     <ClCompile Include="..\src\Graphic\Material\Material.cpp" />
     <ClCompile Include="..\src\Graphic\Material\MaterialManager.cpp" />
     <ClCompile Include="..\src\Graphic\Material\Texture.cpp" />
@@ -159,11 +162,14 @@
     <ClCompile Include="..\src\Graphic\UBO.cpp" />
     <ClCompile Include="..\src\Graphic\VAO.cpp" />
     <ClCompile Include="..\src\Mesh\MyMesh.cpp" />
+    <ClCompile Include="..\src\Mesh\Patch.cpp" />
     <ClCompile Include="..\src\Scene\Camera.cpp" />
     <ClCompile Include="..\src\Scene\Light.cpp" />
     <ClCompile Include="..\src\Scene\MainScene.cpp" />
     <ClCompile Include="..\src\Utilty\Error.cpp" />
     <ClCompile Include="..\src\Utilty\FacePicker.cpp" />
+    <ClCompile Include="..\src\Utilty\TextureMapper.cpp" />
+    <ClCompile Include="..\src\Window\ConvexWindow.cpp" />
     <ClCompile Include="..\src\Window\GUI.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -177,6 +183,7 @@
     <ClInclude Include="..\src\App\App.h" />
     <ClInclude Include="..\src\Graphic\EBO.h" />
     <ClInclude Include="..\src\Graphic\FBO.h" />
+    <ClInclude Include="..\src\Graphic\Material\ColorTexture.h" />
     <ClInclude Include="..\src\Graphic\Material\Material.h" />
     <ClInclude Include="..\src\Graphic\Material\MaterialManager.h" />
     <ClInclude Include="..\src\Graphic\Material\Texture.h" />
@@ -190,21 +197,30 @@
     <ClInclude Include="..\src\Graphic\VAO.h" />
     <ClInclude Include="..\src\Graphic\VBO.h" />
     <ClInclude Include="..\src\Mesh\MyMesh.h" />
+    <ClInclude Include="..\src\Mesh\Patch.h" />
     <ClInclude Include="..\src\Scene\Camera.h" />
     <ClInclude Include="..\src\Scene\Light.h" />
     <ClInclude Include="..\src\Scene\MainScene.h" />
     <ClInclude Include="..\src\stb_image.h" />
     <ClInclude Include="..\src\Utilty\Error.h" />
     <ClInclude Include="..\src\Utilty\FacePicker.h" />
+    <ClInclude Include="..\src\Utilty\TextureMapper.h" />
+    <ClInclude Include="..\src\Window\ConvexWindow.h" />
     <ClInclude Include="..\src\Window\GUI.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\res\shaders\drawWindow.fp" />
+    <None Include="..\res\shaders\drawWindow.vp" />
     <None Include="..\res\shaders\DSPhong_Material.fp" />
     <None Include="..\res\shaders\DSPhong_Material.vp" />
     <None Include="..\res\shaders\faceid.fp" />
     <None Include="..\res\shaders\faceid.vp" />
     <None Include="..\res\shaders\line.fp" />
     <None Include="..\res\shaders\line.vp" />
+    <None Include="..\res\shaders\line2D.fp" />
+    <None Include="..\res\shaders\line2D.vp" />
+    <None Include="..\res\shaders\texture.fp" />
+    <None Include="..\res\shaders\texture.vp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

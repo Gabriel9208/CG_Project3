@@ -12,25 +12,6 @@
 
 namespace CG
 {
-	/* DefaultTraits
-	struct DefaultTraits
-	{
-	  typedef Vec3f  Point;
-	  typedef Vec3f  Normal;
-	  typedef Vec2f  TexCoord;
-	  typedef Vec3uc Color;
-	  VertexTraits    {};
-	  HalfedgeTraits  {};
-	  EdgeTraits      {};
-	  FaceTraits      {};
-	  
-	  VertexAttributes(0);
-	  HalfedgeAttributes(Attributes::PrevHalfedge);
-	  EdgeAttributes(0);
-	  FaceAttributes(0);
-	};
-	*/
-
 	struct MyTraits : OpenMesh::DefaultTraits
 	{
 		using Point = OpenMesh::Vec3d;
@@ -38,9 +19,14 @@ namespace CG
 		using Color = OpenMesh::Vec3f;
 
 		// Add normal property to vertices and faces
-		VertexAttributes(OpenMesh::Attributes::Normal);
+		VertexAttributes(OpenMesh::Attributes::Normal | OpenMesh::Attributes::TexCoord2D );
 		FaceAttributes(OpenMesh::Attributes::Normal);
 		EdgeAttributes(OpenMesh::Attributes::Color);
+
+		VertexTraits
+		{
+		  double weight;
+		};
 	};
 
 	class MyMesh : public OpenMesh::TriMesh_ArrayKernelT<MyTraits>
@@ -49,7 +35,7 @@ namespace CG
 		MyMesh();
 		~MyMesh();
 
-		bool LoadFromFile(std::string filename);
+		bool LoadFromFile(std::string filename, int display_w, int display_h);
 
 		void Render(const glm::mat4 proj, const glm::mat4 view);
 
@@ -92,6 +78,13 @@ namespace CG
 		std::vector<glm::vec3> face_vertices_for_id_pass; // 與 face_vertices 內容和順序一致
 		GLenum DrawBuffers[1];
 
+		/* Buffers for texture rendering */
+		VAO tVAO;
+		VBO<glm::vec3> tVBOp;
+		VBO<glm::vec3> tVBOn;
+		VBO<glm::vec2> tVBOu;
+		UBO tUBO;
+
 		/* Buffers for solid rendering */
 		VAO sVAO;
 		VBO<glm::vec3> sVBOp;
@@ -105,6 +98,16 @@ namespace CG
 		VBO<glm::vec3> wVBOc; // draw selected edge
 		UBO wUBO;
 
+		/* Texture shader */
+		GraphicShader programTex;
+		GLuint tModelID;
+		GLuint tMatKaID;
+		GLuint tMatKdID;
+		GLuint tMatKsID;
+		Texture texture;
+		GLuint baseTexture;
+		GLuint decalFBO;
+
 		/* Phong shader */
 		GraphicShader programPhong;
 		GLuint pModelID;
@@ -115,7 +118,6 @@ namespace CG
 		/* Line shader */
 		GraphicShader programLine;
 		GLuint lModelID;
-		GLuint lMatKdID;
 
 		/* Model properties */
 		glm::mat4 model;

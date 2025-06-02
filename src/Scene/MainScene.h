@@ -2,6 +2,8 @@
 #include "Camera.h"
 #include "../Graphic/ShaderProgram/GraphicShader.h"
 #include "../Graphic/UBO.h"
+#include "../Mesh/Patch.h"
+
 #include <array>
 #include <string>
 #include <map>
@@ -25,9 +27,6 @@ namespace CG
 
 		bool Initialize(int display_w, int display_h);
 		void Render(double timeNow, double timeDelta, int display_w, int display_h);
-		void Resize(int display_w, int display_h);
-		void SetObjectsVisibility(std::vector<bool> isDisplays);
-		void Update(double dt);
 
 		inline Camera& getCamera() { return camera; }
 		inline GLuint getFaceIDTextureID() const { return mesh->getFboColor(); }
@@ -40,6 +39,7 @@ namespace CG
 
 		Camera camera;
 		MyMesh* mesh;
+		Patch* patch;
 
 		double xpos;
 		double ypos;
