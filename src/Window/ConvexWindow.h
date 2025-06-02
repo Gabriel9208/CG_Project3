@@ -15,10 +15,14 @@ namespace CG
 		bool Initialize(int mainWindowDisplay_w, int mainWindowDisplay_h);
 		void Resize(int mainWindowDisplay_w, int mainWindowDisplay_h);
 		void Render(int display_w, int display_h);
-		void updateBuffer();
+		void updateGraph();
 
 	private:
-		GraphicShader program;
+		GraphicShader drawGraphProgram;
+		GraphicShader drawWindowProgram;
+		VAO wVAO;
+		VBO<float> wVBO;
+
 		VAO fVAO;
 		FBO fFBO;
 		VBO<glm::vec2> fVBOp; // pos

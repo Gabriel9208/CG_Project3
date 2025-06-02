@@ -232,6 +232,8 @@ namespace CG
 
 						TextureMapper& tm = TextureMapper::getInstance();
 						tm.Map(mainScene->getMesh(), app->patch->getOrderedBoundaryEdges(), &app->patch->getVertices());
+
+						app->convexWindow->updateGraph();
 					}
 					if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS)
 					{

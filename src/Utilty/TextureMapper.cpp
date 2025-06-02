@@ -30,6 +30,7 @@ namespace CG
 		// clear state
 		orderedBoundaryVertex.clear();
 		boundaryUV.clear();
+		verticesUV.clear();
 		referenceMesh = mesh;
 		vertices = _vertices;
 
@@ -92,10 +93,10 @@ namespace CG
 		{
 			idx++;
 			angle += (2 * PI) * (*i / totalDistance);
-			double x = 0.5 * std::cos(angle);
-			double y = 0.5 * std::sin(angle);
+			double x = 0.5 * std::cos(angle) + 0.5;
+			double y = 0.5 * std::sin(angle) + 0.5;
 
-			boundaryUV[orderedBoundaryVertex[idx]] = OpenMesh::Vec2f(x + 0.5, y + 0.5);
+			boundaryUV[orderedBoundaryVertex[idx]] = OpenMesh::Vec2f(x, y);
 		}
 	}
 
@@ -121,6 +122,7 @@ namespace CG
 		
 		if (DIMENTION == 0)
 		{
+			verticesUV = boundaryUV;
 			return false;
 		}
 

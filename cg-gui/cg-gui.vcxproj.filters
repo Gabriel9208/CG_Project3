@@ -252,5 +252,11 @@
     <None Include="..\res\shaders\line2D.vp">
       <Filter>Shader</Filter>
     </None>
+    <None Include="..\res\shaders\drawWindow.fp">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\res\shaders\drawWindow.vp">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>
