@@ -63,7 +63,7 @@ namespace CG
 
 
 		mesh = new MyMesh();
-		mesh->LoadFromFile("../../res/models/Armadillo.obj");
+		mesh->LoadFromFile("../../res/models/Armadillo.obj", display_w, display_h);
 
 		return true;
 	}

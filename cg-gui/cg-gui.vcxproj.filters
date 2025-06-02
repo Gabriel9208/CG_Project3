@@ -234,5 +234,11 @@
     <None Include="..\res\shaders\line.vp">
       <Filter>Shader</Filter>
     </None>
+    <None Include="..\res\shaders\texture.fp">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\res\shaders\texture.vp">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

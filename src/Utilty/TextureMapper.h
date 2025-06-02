@@ -19,6 +19,8 @@ namespace CG
 
 		std::map<OpenMesh::VertexHandle, OpenMesh::Vec2d> boundaryUV;
 
+		std::map<OpenMesh::VertexHandle, OpenMesh::Vec2f> allUV;
+
 		TextureMapper();
 		~TextureMapper() {}
 
@@ -26,7 +28,7 @@ namespace CG
 		void calculateBoundaryVertexUV();
 		void calculateInnerPointUV();
 		double calculateWeight(OpenMesh::VertexHandle center, OpenMesh::VertexHandle last, OpenMesh::VertexHandle curr, OpenMesh::VertexHandle next);
-	
+			
 	public:
 		static TextureMapper& getInstance(); 
 
@@ -35,6 +37,8 @@ namespace CG
 			std::vector<OpenMesh::HalfedgeHandle>& orderedBoundaryEdges, 
 			std::set<OpenMesh::VertexHandle>* _vertices
 		);
+
+		inline std::map<OpenMesh::VertexHandle, OpenMesh::Vec2f> getAllUVMap() { return allUV; }
 	};
 
 }

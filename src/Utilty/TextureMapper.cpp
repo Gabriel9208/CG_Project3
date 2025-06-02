@@ -226,6 +226,18 @@ namespace CG
 			std::cerr << "Eigen solve for innerY failed!" << std::endl;
 			return;
 		}
+
+		for (auto& vh : innerVertex) 
+		{
+			unsigned int ovIdx = overallIndex[vh];
+			unsigned int matIdx = overallIndexToMatrixEntryIndex[ovIdx];
+			allUV[vh] = OpenMesh::Vec2f(innerU[matIdx], innerV[matIdx]);
+		}
+
+		for (auto& pair : boundaryUV) 
+		{
+			allUV[pair.first] = pair.second;
+		}
 	}
 
 	// mean-value

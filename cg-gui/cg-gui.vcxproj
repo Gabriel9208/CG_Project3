@@ -211,6 +211,8 @@
     <None Include="..\res\shaders\faceid.vp" />
     <None Include="..\res\shaders\line.fp" />
     <None Include="..\res\shaders\line.vp" />
+    <None Include="..\res\shaders\texture.fp" />
+    <None Include="..\res\shaders\texture.vp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
