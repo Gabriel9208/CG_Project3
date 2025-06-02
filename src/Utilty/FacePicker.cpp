@@ -21,6 +21,11 @@ namespace CG
 		mesh = target;
 	}
 
+	void FacePicker::setRange(unsigned int _range)
+	{
+		range = _range;
+	}
+
 	void FacePicker::chooseFace(unsigned int height, double _xpos, double _ypos, glm::mat4 view, glm::mat4 proj, GLuint textureID)
 	{
 		float depthVal = 0;
@@ -34,29 +39,42 @@ namespace CG
 		glm::vec3 windowPos(windowX, windowY, depthVal);
 		glm::vec3 wp = glm::unProject(windowPos, view, proj, viewport);
 
-		unsigned int idx;
-		GLCall(glGetTextureSubImage(textureID, 0, static_cast<GLint>(windowX), static_cast<GLint>(windowY), 0, 1, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, sizeof(unsigned int), &idx));
+
+		range = std::max(1, int(range));
+		std::vector<unsigned int> idxs(range * range, 0);
+		int startX = std::max(0, int(windowX - range / 2));
+		int startY = std::max(0, int(windowY - range / 2));
+		int readWidth  = std::min(int(range), _viewPort[2] - startX);
+		int readHeight = std::min(int(range), _viewPort[3] - startY);
+		
+		GLCall(glGetTextureSubImage(textureID, 0, startX, startY, 0, readWidth, readHeight, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, sizeof(unsigned int) * idxs.size(), idxs.data()));
 		GLCall(glBindFramebuffer(GL_READ_FRAMEBUFFER, 0));
 
-		if (idx == 0)
+		for (int y = 0; y < readHeight; ++y)
 		{
-			return;
+			for (int x = 0; x < readWidth; ++x)
+			{
+				unsigned int idx = idxs[y * range + x];
+
+				if (idx == 0)
+					continue;
+
+				if (pickedFaces.find(idx - 1) == pickedFaces.end())
+				{
+					pickedFaces.insert(idx - 1);
+				}
+			}
 		}
 
-		if (pickedFaces.find(idx - 1) == pickedFaces.end())
+		for (auto faceId = pickedFaces.begin(); faceId != pickedFaces.end(); faceId++)
 		{
-			pickedFaces.insert(idx - 1);
-
-			for (auto faceId = pickedFaces.begin(); faceId != pickedFaces.end(); faceId++)
+			OpenMesh::FaceHandle fh = mesh->face_handle(*faceId);
+			for (MyMesh::FaceEdgeIter fe_itr = mesh->fe_iter(fh); fe_itr.is_valid(); fe_itr++)
 			{
-				OpenMesh::FaceHandle fh = mesh->face_handle(*faceId);
-				for (MyMesh::FaceEdgeIter fe_itr = mesh->fe_iter(fh); fe_itr.is_valid(); fe_itr++)
-				{
-					OpenMesh::EdgeHandle eh = *fe_itr;
-					mesh->set_color(eh, selectedLineColor);
-					std::vector<glm::vec3> v = { f2f(selectedLineColor), f2f(selectedLineColor) };
-					mesh->setWVBOcSubData(eh.idx() * 2, 2, &v);
-				}
+				OpenMesh::EdgeHandle eh = *fe_itr;
+				mesh->set_color(eh, selectedLineColor);
+				std::vector<glm::vec3> v = { f2f(selectedLineColor), f2f(selectedLineColor) };
+				mesh->setWVBOcSubData(eh.idx() * 2, 2, &v);
 			}
 		}
 

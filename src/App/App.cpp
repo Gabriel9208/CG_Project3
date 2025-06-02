@@ -215,7 +215,9 @@ namespace CG
 					if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 					{
 						FacePicker& fp = FacePicker::getInstance();
-						fp.clearPickedFaces();
+
+						if (!(mods & GLFW_MOD_SHIFT))
+							fp.clearPickedFaces();
 
 						app->chooseFace(window);
 						mouseLeftPressed = true;
