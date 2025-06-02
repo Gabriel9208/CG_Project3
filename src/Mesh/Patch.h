@@ -27,10 +27,14 @@ namespace CG
 		glm::vec3 f2f(OpenMesh::Vec3f v);
 
 	public:
+		Patch() : referenceMesh(nullptr), borderColor(0, 0, 1), defaultLineColor(0, 0, 0) {}
+		Patch(MyMesh* mesh) : referenceMesh(mesh), borderColor(0, 0, 1), defaultLineColor(0, 0, 0) {}
 		Patch(MyMesh* mesh, std::set<unsigned int>& faceId);
 		~Patch();
 
+		void init(MyMesh* mesh, std::set<unsigned int>& faceId);
 		void loadSets(std::set<unsigned int>& faceId);
+		void updateSet(unsigned int faceId);
 		void identifyBoundary();
 		void generateOrderedBoundary();
 		void clear();

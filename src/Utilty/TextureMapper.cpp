@@ -21,7 +21,7 @@ namespace CG
 		return instance;
 	}
 
-	void TextureMapper::Map(
+	std::map<OpenMesh::VertexHandle, OpenMesh::Vec2d>& TextureMapper::Map(
 		MyMesh* mesh, 
 		std::vector<OpenMesh::HalfedgeHandle>& orderedBoundaryEdges, 
 		std::set<OpenMesh::VertexHandle>* _vertices
@@ -38,7 +38,11 @@ namespace CG
 		calculateBoundaryVertexUV();
 
 		// calculate inner points
-		calculateInnerPointUV();
+		if (calculateInnerPointUV())
+		{
+			return verticesUV;
+		}
+		 
 	}
 
 	void TextureMapper::halfedgeToVertex(std::vector<OpenMesh::HalfedgeHandle>& orderedBoundaryEdges)
@@ -95,7 +99,7 @@ namespace CG
 		}
 	}
 
-	void TextureMapper::calculateInnerPointUV()
+	bool TextureMapper::calculateInnerPointUV()
 	{
 		// chaeck if all element in orderedBoundaryVertex are unique
 		std::set<OpenMesh::VertexHandle> boundaryVertex;
@@ -109,7 +113,7 @@ namespace CG
 		if (boundaryVertex.size() != orderedBoundaryVertex.size())
 		{
 			std::cout << "Element in orderedBoundaryVertex are not unique.\n";
-			return;
+			return false;
 		}
 
 		
@@ -117,14 +121,15 @@ namespace CG
 		
 		if (DIMENTION == 0)
 		{
-			return;
+			return false;
 		}
 
 		Eigen::SparseMatrix<double> matrixA(DIMENTION, DIMENTION); // main matrix to be calculated	
-		Eigen::VectorXd vectorU = Eigen::VectorXd::Zero(DIMENTION); // left hand side vector for x	
-		Eigen::VectorXd vectorV = Eigen::VectorXd::Zero(DIMENTION); // left hand side vector for x	
+		Eigen::VectorXd vectorU = Eigen::VectorXd::Zero(DIMENTION); // right hand side vector for u	
+		Eigen::VectorXd vectorV = Eigen::VectorXd::Zero(DIMENTION); // right hand side vector for v
 
 		std::map<OpenMesh::VertexHandle, unsigned int> overallIndex; // give each vertex a index
+		std::map<unsigned int, OpenMesh::VertexHandle> matrixEntryIndexToVertexHandle; // give each vertex a index
 		std::map<unsigned int, unsigned int> overallIndexToMatrixEntryIndex; // give each vertex a index
 
 		std::set<OpenMesh::VertexHandle> innerVertex; // a set of inner vertex
@@ -142,13 +147,13 @@ namespace CG
 			// Fill in inner vertex
 			if (boundaryVertex.find(*it) == boundaryVertex.end())
 			{
+				matrixEntryIndexToVertexHandle[matrixIdx] = *it;
 				overallIndexToMatrixEntryIndex[overallIdx] = matrixIdx;
 				innerVertex.insert(*it);
 				matrixIdx++;
 			}
 
 			overallIdx++;
-
 		}
 
 		// fill in matrixA and vectorB
@@ -212,20 +217,28 @@ namespace CG
 		solver.compute(matrixA); 
 		if (solver.info() != Eigen::Success) {
 			std::cerr << "Eigen decomposition failed!" << std::endl;
-			return;
+			return false;
 		}
 
 		Eigen::VectorXd innerU = solver.solve(vectorU);
 		if (solver.info() != Eigen::Success) {
-			std::cerr << "Eigen solve for innerX failed!" << std::endl;
-			return;
+			std::cerr << "Eigen solve for innerU failed!" << std::endl;
+			return false;
 		}
 
 		Eigen::VectorXd innerV = solver.solve(vectorV);
 		if (solver.info() != Eigen::Success) {
-			std::cerr << "Eigen solve for innerY failed!" << std::endl;
-			return;
+			std::cerr << "Eigen solve for innerV failed!" << std::endl;
+			return false;
 		}
+
+		verticesUV = boundaryUV;
+		for (unsigned int i = 0; i < DIMENTION; i++)
+		{
+			verticesUV[matrixEntryIndexToVertexHandle[i]] = OpenMesh::Vec2d(innerU[i], innerV[i]);
+		}
+
+		return true;
 	}
 
 	// mean-value

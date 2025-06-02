@@ -137,11 +137,11 @@ namespace CG
 	}
 
 	App::App(): width(1280), height(720)
-
 	{
 		gui = nullptr;
 		mainWindow = nullptr;
 		mainScene = nullptr;
+		convexWindow = nullptr;
 	}
 
 	App::~App()
@@ -185,6 +185,9 @@ namespace CG
 		mainScene = new MainScene();
 		mainScene->Initialize(display_w, display_h);
 
+		patch = new Patch(mainScene->getMesh());
+		convexWindow = new ConvexWindow(mainScene->getMesh(), display_w, display_h);
+
 		FacePicker& fp = FacePicker::getInstance();
 		fp.registerToMesh(mainScene->getMesh());
 
@@ -216,14 +219,19 @@ namespace CG
 					{
 						FacePicker& fp = FacePicker::getInstance();
 						fp.clearPickedFaces();
-
+						app->patch->clear();
 						app->chooseFace(window);
 						mouseLeftPressed = true;
 
 					}
 					if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
 					{
+						FacePicker& fp = FacePicker::getInstance();
 						mouseLeftPressed = false;
+						app->patch->init(mainScene->getMesh(), fp.getFacesPicked());
+
+						TextureMapper& tm = TextureMapper::getInstance();
+						tm.Map(mainScene->getMesh(), app->patch->getOrderedBoundaryEdges(), &app->patch->getVertices());
 					}
 					if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS)
 					{
@@ -261,6 +269,7 @@ namespace CG
 		glfwSetCursorPosCallback(mainWindow, cursorEvent);
 
 		glfwSetCharCallback(mainWindow, charCallback);
+
 
 		
 		return true;
@@ -315,33 +324,27 @@ namespace CG
 		glViewport(0, 0, display_w, display_h);
 
 		mainScene->Render(timeNow, timeDelta, display_w, display_h);
+		convexWindow->Render(display_w, display_h);
 	}
 
 	void App::chooseFace(GLFWwindow* window)
 	{
-		if (patch != nullptr)
-		{
-			delete patch;
-		}
-
-		App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
 		FacePicker& fp = FacePicker::getInstance();
 
 		double x, y;
 		glfwGetCursorPos(window, &x, &y);
+		if (x < 0 || y < 0)
+		{
+			return;
+		}
 		fp.chooseFace(
 			height,
 			x,
 			y,
-			*app->getMainScene()->getCamera().GetViewMatrix(),
-			*app->getMainScene()->getCamera().GetProjectionMatrix(),
-			app->getMainScene()->getFaceIDTextureID()
+			*mainScene->getCamera().GetViewMatrix(),
+			*mainScene->getCamera().GetProjectionMatrix(),
+			mainScene->getFaceIDTextureID()
 		);
-
-		patch = new Patch(mainScene->getMesh(), fp.getFacesPicked());
-
-		TextureMapper& tm = TextureMapper::getInstance();
-		tm.Map(mainScene->getMesh(), patch->getOrderedBoundaryEdges(), &patch->getVertices());
 	}
 
 	void App::resizeWindow(unsigned int w, unsigned int h)
@@ -349,6 +352,7 @@ namespace CG
 		width = w;
 		height = h;
 		mainScene->getMesh()->resizeTextureRBO(width, height);
+		convexWindow->Resize(width, height);
 	}
 
 	void App::GLInit()

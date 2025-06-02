@@ -86,6 +86,12 @@
     <ClCompile Include="..\src\Utilty\TextureMapper.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Window\ConvexWindow.cpp">
+      <Filter>Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Graphic\Material\ColorTexture.cpp">
+      <Filter>Graphic\Material</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -214,6 +220,12 @@
     <ClInclude Include="..\src\Utilty\TextureMapper.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Window\ConvexWindow.h">
+      <Filter>Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Graphic\Material\ColorTexture.h">
+      <Filter>Graphic\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\res\shaders\DSPhong_Material.fp">
@@ -232,6 +244,12 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="..\res\shaders\line.vp">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\res\shaders\line2D.fp">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\res\shaders\line2D.vp">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

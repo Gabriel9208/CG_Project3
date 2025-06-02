@@ -101,7 +101,6 @@ namespace CG
 		/* Line shader */
 		GraphicShader programLine;
 		GLuint lModelID;
-		GLuint lMatKdID;
 
 		/* Model properties */
 		glm::mat4 model;

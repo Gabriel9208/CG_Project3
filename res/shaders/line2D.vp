@@ -1,0 +1,12 @@
+#version 430
+
+layout(location = 0) in vec2 in_Position;
+
+uniform mat4 Projection;
+
+
+void main(void)
+{
+	// Don't forget to transform the geometry!
+	gl_Position = Projection * vec4(in_Position, 0.0, 1.0);
+}

@@ -9,15 +9,20 @@ namespace CG
 
 	Patch::Patch(MyMesh* mesh, std::set<unsigned int>& faceId): borderColor(0, 0, 1), defaultLineColor(0, 0, 0)
 	{
-		referenceMesh = mesh;
-		loadSets(faceId);
-		identifyBoundary();
-		generateOrderedBoundary();
+		init(mesh, faceId);
 	}
 
 	Patch::~Patch()
 	{
 		clear();
+	}
+
+	void Patch::init(MyMesh* mesh, std::set<unsigned int>& faceId)
+	{
+		referenceMesh = mesh;
+		loadSets(faceId);
+		identifyBoundary();
+		generateOrderedBoundary();
 	}
 
 	void Patch::loadSets(std::set<unsigned int>& faceId)
@@ -39,6 +44,25 @@ namespace CG
 				}
 			}
 		}
+	}
+
+	void Patch::updateSet(unsigned int faceId)
+	{
+		OpenMesh::FaceHandle fh = referenceMesh->face_handle(faceId);
+		faces.insert(fh);
+
+		for (MyMesh::FaceEdgeIter fe_itr = referenceMesh->fe_iter(fh); fe_itr.is_valid(); fe_itr++)
+		{
+			OpenMesh::EdgeHandle eh = *fe_itr;
+			edges.insert(eh);
+
+			for (MyMesh::EdgeVertexIter ev_itr = referenceMesh->ev_iter(eh); ev_itr.is_valid(); ev_itr++)
+			{
+				OpenMesh::VertexHandle vh = *ev_itr;
+				vertices.insert(vh);
+			}
+		}
+		
 	}
 
 	void Patch::identifyBoundary()
@@ -134,6 +158,10 @@ namespace CG
 
 	void Patch::clear()
 	{
+		if (boundaryEdges.size() == 0)
+		{
+			return;
+		}
 		for (auto edge = boundaryEdges.begin(); edge != boundaryEdges.end(); edge++)
 		{
 			OpenMesh::EdgeHandle eh = *edge;
@@ -142,5 +170,12 @@ namespace CG
 			std::vector<glm::vec3> v = { f2f(defaultLineColor), f2f(defaultLineColor) };
 			referenceMesh->setWVBOcSubData(eh.idx() * 2, 2, &v);
 		}
+
+		boundaryEdges.clear();
+		faces.clear();
+		edges.clear();
+		vertices.clear();
+
+		orderedBoundaryEdges.clear();
 	}
 }

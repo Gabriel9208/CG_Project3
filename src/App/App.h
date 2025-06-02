@@ -13,6 +13,7 @@
 #include "../Scene/Camera.h"
 #include "../Mesh/Patch.h"
 #include "../Utilty/TextureMapper.h"
+#include "../Window/ConvexWindow.h"
 
 namespace CG
 {
@@ -39,6 +40,7 @@ namespace CG
         void GLInit();
 
         GLFWwindow* mainWindow;
+        ConvexWindow* convexWindow;
         MainScene* mainScene;
         GUI* gui;
         Patch* patch;

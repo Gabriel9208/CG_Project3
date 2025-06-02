@@ -16,7 +16,7 @@ namespace CG
 		return instance; 
 	}
 
-	void FacePicker::registerToMesh(MyMesh* target)
+	void FacePicker::registerToMesh(MyMesh* target) 
 	{
 		mesh = target;
 	}
@@ -59,8 +59,6 @@ namespace CG
 				}
 			}
 		}
-
-		patch = new Patch(mesh, pickedFaces);
 	}
 
 
@@ -88,7 +86,6 @@ namespace CG
 			}
 		}
 		pickedFaces.clear(); 
-		delete patch;
 		canHighlightEdge = false;
 	}
 

@@ -12,7 +12,7 @@ namespace CG
 		sVAO(), sVBOp(), sVBOn(), sUBO(),
 		wVAO(), wVBOp(), wVBOn(), wUBO(),
 		programPhong(), pModelID(-1),	pMatKaID(-1), pMatKdID(-1),	pMatKsID(-1),
-		programLine(), lModelID(-1), lMatKdID(-1)
+		programLine(), lModelID(-1)
 	{
 		model = glm::mat4(1.0);
 
@@ -99,7 +99,6 @@ namespace CG
 		wVAO.bind();
 
 		GLCall(glUniformMatrix4fv(lModelID, 1, GL_FALSE, &model[0][0]));
-		GLCall(glUniform3fv(lMatKdID, 1, &colorLine[0]));
 
 		// update data to UBO for MVP
 		wUBO.bind();
@@ -162,7 +161,6 @@ namespace CG
 		programLine.use();
 
 		lModelID = glGetUniformLocation(programLine.getId(), "Model");
-		lMatKdID = glGetUniformLocation(programLine.getId(), "Material.Kd");
 #pragma endregion
 
 #pragma region faceID Shader

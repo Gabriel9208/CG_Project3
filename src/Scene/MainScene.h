@@ -27,9 +27,6 @@ namespace CG
 
 		bool Initialize(int display_w, int display_h);
 		void Render(double timeNow, double timeDelta, int display_w, int display_h);
-		void Resize(int display_w, int display_h);
-		void SetObjectsVisibility(std::vector<bool> isDisplays);
-		void Update(double dt);
 
 		inline Camera& getCamera() { return camera; }
 		inline GLuint getFaceIDTextureID() const { return mesh->getFboColor(); }

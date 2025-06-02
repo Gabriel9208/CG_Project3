@@ -151,6 +151,7 @@
     <ClCompile Include="..\src\App\App.cpp" />
     <ClCompile Include="..\src\Graphic\EBO.cpp" />
     <ClCompile Include="..\src\Graphic\FBO.cpp" />
+    <ClCompile Include="..\src\Graphic\Material\ColorTexture.cpp" />
     <ClCompile Include="..\src\Graphic\Material\Material.cpp" />
     <ClCompile Include="..\src\Graphic\Material\MaterialManager.cpp" />
     <ClCompile Include="..\src\Graphic\Material\Texture.cpp" />
@@ -168,6 +169,7 @@
     <ClCompile Include="..\src\Utilty\Error.cpp" />
     <ClCompile Include="..\src\Utilty\FacePicker.cpp" />
     <ClCompile Include="..\src\Utilty\TextureMapper.cpp" />
+    <ClCompile Include="..\src\Window\ConvexWindow.cpp" />
     <ClCompile Include="..\src\Window\GUI.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -181,6 +183,7 @@
     <ClInclude Include="..\src\App\App.h" />
     <ClInclude Include="..\src\Graphic\EBO.h" />
     <ClInclude Include="..\src\Graphic\FBO.h" />
+    <ClInclude Include="..\src\Graphic\Material\ColorTexture.h" />
     <ClInclude Include="..\src\Graphic\Material\Material.h" />
     <ClInclude Include="..\src\Graphic\Material\MaterialManager.h" />
     <ClInclude Include="..\src\Graphic\Material\Texture.h" />
@@ -202,6 +205,7 @@
     <ClInclude Include="..\src\Utilty\Error.h" />
     <ClInclude Include="..\src\Utilty\FacePicker.h" />
     <ClInclude Include="..\src\Utilty\TextureMapper.h" />
+    <ClInclude Include="..\src\Window\ConvexWindow.h" />
     <ClInclude Include="..\src\Window\GUI.h" />
   </ItemGroup>
   <ItemGroup>
@@ -211,6 +215,8 @@
     <None Include="..\res\shaders\faceid.vp" />
     <None Include="..\res\shaders\line.fp" />
     <None Include="..\res\shaders\line.vp" />
+    <None Include="..\res\shaders\line2D.fp" />
+    <None Include="..\res\shaders\line2D.vp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
