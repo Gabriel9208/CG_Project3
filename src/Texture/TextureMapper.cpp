@@ -103,15 +103,16 @@ namespace CG
 		}
 
 		scalingDegree += scale;
-	} 
+	}
 
-	void TextureMapper::halfedgeToVertex(std::vector<OpenMesh::HalfedgeHandle>& orderedBoundaryEdges)
+	void TextureMapper::halfedgeToVertex(std::vector<OpenMesh::HalfedgeHandle>& _orderedBoundaryEdges)
 	{
+		orderedBoundaryEdges = _orderedBoundaryEdges;
 		for (std::vector<OpenMesh::HalfedgeHandle>::iterator itr = orderedBoundaryEdges.begin();
 			itr != orderedBoundaryEdges.end();
 			itr++)
 		{
-			orderedBoundaryVertex.emplace_back(referenceMesh->from_vertex_handle(*itr));
+			orderedBoundaryVertex.emplace_back(referenceMesh->to_vertex_handle(*itr));
 		}
 	}
 

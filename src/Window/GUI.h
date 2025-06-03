@@ -28,8 +28,18 @@ namespace CG {
 		void exportPanel();
 		void importPanel();
 
+		void galleryPanel();
 		void pickerPanel();
 		void texturePanel();
+
+		// gallery panel variables
+		const char* styleList[1];
+		int styleSelectedIdx;
+
+		// texture panel variables
+		char styleName[128] = "Default";
+		const char* textureList[1];
+		int textureSelectedIdx;
 
 		void _render();
 

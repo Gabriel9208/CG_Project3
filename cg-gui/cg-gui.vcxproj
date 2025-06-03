@@ -166,10 +166,11 @@
     <ClCompile Include="..\src\Scene\Camera.cpp" />
     <ClCompile Include="..\src\Scene\Light.cpp" />
     <ClCompile Include="..\src\Scene\MainScene.cpp" />
+    <ClCompile Include="..\src\Texture\FacePicker.cpp" />
+    <ClCompile Include="..\src\Texture\Gallery.cpp" />
+    <ClCompile Include="..\src\Texture\TextureMapper.cpp" />
+    <ClCompile Include="..\src\Texture\TexturePainter.cpp" />
     <ClCompile Include="..\src\Utilty\Error.cpp" />
-    <ClCompile Include="..\src\Utilty\FacePicker.cpp" />
-    <ClCompile Include="..\src\Utilty\TextureMapper.cpp" />
-    <ClCompile Include="..\src\Utilty\TexturePainter.cpp" />
     <ClCompile Include="..\src\Window\ConvexWindow.cpp" />
     <ClCompile Include="..\src\Window\GUI.cpp" />
     <ClCompile Include="main.cpp" />
@@ -203,10 +204,11 @@
     <ClInclude Include="..\src\Scene\Light.h" />
     <ClInclude Include="..\src\Scene\MainScene.h" />
     <ClInclude Include="..\src\stb_image.h" />
+    <ClInclude Include="..\src\Texture\FacePicker.h" />
+    <ClInclude Include="..\src\Texture\Gallery.h" />
+    <ClInclude Include="..\src\Texture\TextureMapper.h" />
+    <ClInclude Include="..\src\Texture\TexturePainter.h" />
     <ClInclude Include="..\src\Utilty\Error.h" />
-    <ClInclude Include="..\src\Utilty\FacePicker.h" />
-    <ClInclude Include="..\src\Utilty\TextureMapper.h" />
-    <ClInclude Include="..\src\Utilty\TexturePainter.h" />
     <ClInclude Include="..\src\Window\ConvexWindow.h" />
     <ClInclude Include="..\src\Window\GUI.h" />
   </ItemGroup>

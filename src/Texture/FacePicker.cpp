@@ -1,5 +1,5 @@
 #include "FacePicker.h"
-#include "Error.h"
+#include "../Utilty/Error.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>

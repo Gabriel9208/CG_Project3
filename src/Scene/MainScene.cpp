@@ -1,6 +1,6 @@
 #include "MainScene.h"
 #include "../Utilty/Error.h"
-#include "../Utilty/TexturePainter.h"
+#include "../Texture/TexturePainter.h"
 
 #include <glm/gtc/type_ptr.hpp>
 

@@ -1,7 +1,7 @@
 #include "TexturePainter.h"
 #include "FacePicker.h"
 #include "TextureMapper.h"
-#include "Error.h"
+#include "../Utilty/Error.h"
 
 namespace CG
 {
@@ -88,6 +88,104 @@ namespace CG
 		return instance;
 	}
 
+	void TexturePainter::update(Style* style)
+	{
+		TextureMapper& tm = TextureMapper::getInstance();
+		FacePicker& fp = FacePicker::getInstance();
+
+		std::vector<glm::vec3> positions;
+		uvCoords.clear();
+		heIdx.clear();
+		std::vector<glm::vec3> faceNormals;
+
+		for (auto appearance = style->appearances.begin(); appearance != style->appearances.end(); appearance++)
+		{
+
+			for (auto idx = 0; idx < appearance->faceIDs.size(); idx++)
+			{
+				unsigned int uvIdx = 0;
+
+				auto pickedFaces = appearance->faceIDs[idx];
+
+				//============================
+				for (auto faceId = pickedFaces.begin(); faceId != pickedFaces.end(); ++faceId)
+				{
+					OpenMesh::FaceHandle fh = referenceMesh->face_handle(*faceId);
+
+					std::vector<OpenMesh::VertexHandle> vhandles;
+
+					for (MyMesh::FaceVertexIter fv_it = referenceMesh->fv_iter(fh); fv_it.is_valid(); ++fv_it)
+					{
+						vhandles.push_back(*fv_it);
+					}
+
+					if (vhandles.size() == 3)
+					{
+						glm::vec3 p[3];
+
+						for (int i = 0; i < 3; ++i)
+						{
+							auto vh = vhandles[i];
+							auto pos = referenceMesh->point(vh);
+							p[i] = glm::vec3(pos[0], pos[1], pos[2]);
+
+							positions.push_back(p[i]);
+
+							auto it = appearance->UVSets[idx];
+							uvCoords.emplace_back(it.UVs[uvIdx][0], it.UVs[uvIdx][1]);
+							uvIdx++;
+						}
+
+						glm::vec3 edge1 = p[1] - p[0];
+						glm::vec3 edge2 = p[2] - p[0];
+						glm::vec3 normal = glm::normalize(glm::cross(edge1, edge2));
+
+						faceNormals.push_back(normal);
+						faceNormals.push_back(normal);
+						faceNormals.push_back(normal);
+					}
+				}
+				//===================
+			}
+		}
+
+		if (positions.size() > 0)
+		{
+			tVAO->bind();
+			tVBOp->bind();
+			tVBOp->setData(positions, GL_DYNAMIC_DRAW);
+			GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0));
+			GLCall(glEnableVertexAttribArray(0));
+			tVBOp->unbind();
+
+			tVBOn->bind();
+			tVBOn->setData(faceNormals, GL_DYNAMIC_DRAW);
+			GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0));
+			GLCall(glEnableVertexAttribArray(1));
+			tVBOn->unbind();
+
+			tVBOu->bind();
+			tVBOu->setData(uvCoords, GL_DYNAMIC_DRAW);
+			GLCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0));
+			GLCall(glEnableVertexAttribArray(2));
+			tVBOu->unbind();
+
+			program->use();
+			texture->bind();
+			GLCall(glUniform1i(glGetUniformLocation(program->getId(), "Texture"), 0));
+			glBindTexture(GL_TEXTURE_2D, texture->getId());
+			program->unUse();
+
+			tVAO->unbind();
+
+			//glBindFramebuffer(GL_FRAMEBUFFER, decalFBO);
+
+			//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
+
+		drawCount = positions.size();
+	}
+
 	void TexturePainter::update(MyMesh* mesh)
 	{
 		referenceMesh = mesh;
@@ -96,7 +194,8 @@ namespace CG
 		auto pickedFaces = fp.getFacesPicked();
 
 		std::vector<glm::vec3> positions;
-		std::vector<glm::vec2> uvCoords;
+		uvCoords.clear();
+		heIdx.clear();
 		std::vector<glm::vec3> faceNormals;
 
 		const auto& uvMap = tm.getAllUVMap();
@@ -106,6 +205,11 @@ namespace CG
 			OpenMesh::FaceHandle fh = referenceMesh->face_handle(*faceId);
 
 			std::vector<OpenMesh::VertexHandle> vhandles;
+
+			for (MyMesh::FaceHalfedgeIter fh_it = referenceMesh->fh_iter(fh); fh_it.is_valid(); fh_it++)
+			{
+				heIdx.emplace_back(fh_it->idx());
+			}
 
 			for (MyMesh::FaceVertexIter fv_it = referenceMesh->fv_iter(fh); fv_it.is_valid(); ++fv_it)
 			{
@@ -185,8 +289,8 @@ namespace CG
 		FacePicker& fp = FacePicker::getInstance();
 		auto pickedFaces = fp.getFacesPicked();
 
-		std::vector<glm::vec2> uvCoords;
-
+		uvCoords.clear();
+		heIdx.clear();
 		const auto& uvMap = tm.getAllUVMap();
 
 		for (auto faceId = pickedFaces.begin(); faceId != pickedFaces.end(); ++faceId)
@@ -194,6 +298,11 @@ namespace CG
 			OpenMesh::FaceHandle fh = referenceMesh->face_handle(*faceId);
 
 			std::vector<OpenMesh::VertexHandle> vhandles;
+
+			for (MyMesh::FaceHalfedgeIter fh_it = referenceMesh->fh_iter(fh); fh_it.is_valid(); fh_it++)
+			{
+				heIdx.emplace_back(fh_it->idx());
+			}
 
 			for (MyMesh::FaceVertexIter fv_it = referenceMesh->fv_iter(fh); fv_it.is_valid(); ++fv_it)
 			{

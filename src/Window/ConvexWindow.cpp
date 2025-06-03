@@ -1,5 +1,5 @@
 #include "ConvexWindow.h"
-#include "../Utilty/TextureMapper.h"
+#include "../Texture/TextureMapper.h"
 #include "../Utilty/Error.h"
 #include <glm/gtc/matrix_transform.hpp>
 

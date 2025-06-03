@@ -12,7 +12,7 @@
 #include "Scene/MainScene.h"
 #include "../Scene/Camera.h"
 #include "../Mesh/Patch.h"
-#include "../Utilty/TextureMapper.h"
+#include "../Texture/TextureMapper.h"
 #include "../Window/ConvexWindow.h"
 
 namespace CG

@@ -6,6 +6,7 @@
 #include "../Graphic/FBO.h"
 #include "../Graphic/Material/Texture.h"
 #include "../Mesh/MyMesh.h"
+#include "Gallery.h"
 
 #include <glm/glm.hpp>
 
@@ -39,6 +40,9 @@ namespace CG
 		glm::vec3 colorSpecular;
 		glm::vec3 colorLine;
 
+		std::vector<glm::vec2> uvCoords;
+		std::vector<unsigned int> heIdx;
+
 		unsigned int drawCount;
 
 		TexturePainter();
@@ -49,10 +53,12 @@ namespace CG
 		static TexturePainter& getInstance();
 
 		void init(int display_w, int display_h);
-		void update(MyMesh* mesh);
+		void update(MyMesh* mesh); // directly take data from texture mapper and face picker
+		void update(Style* style);
 		void updateUV();
 
 		void render(const glm::mat4 proj, const glm::mat4 view);
-
+		inline std::vector<glm::vec2>& getUVCoords() { return uvCoords; }
+		inline std::vector<unsigned int> getHeIdx() { return heIdx; }
 	};
 }

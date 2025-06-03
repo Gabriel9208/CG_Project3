@@ -19,14 +19,10 @@ namespace CG
 		using Color = OpenMesh::Vec3f;
 
 		// Add normal property to vertices and faces
-		VertexAttributes(OpenMesh::Attributes::Normal | OpenMesh::Attributes::TexCoord2D );
+		VertexAttributes(OpenMesh::Attributes::Normal);
 		FaceAttributes(OpenMesh::Attributes::Normal);
 		EdgeAttributes(OpenMesh::Attributes::Color);
-
-		VertexTraits
-		{
-		  double weight;
-		};
+		HalfedgeAttributes(OpenMesh::Attributes::TexCoord2D);
 	};
 
 	class MyMesh : public OpenMesh::TriMesh_ArrayKernelT<MyTraits>

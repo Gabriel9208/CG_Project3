@@ -7,9 +7,10 @@
 #include <imgui_impl_glfw.h>
 
 #include "App.h"
-#include "../Utilty/FacePicker.h"
-#include "../Utilty/TextureMapper.h"
-#include "../Utilty/TexturePainter.h"
+#include "../Texture/FacePicker.h"
+#include "../Texture/TextureMapper.h"
+#include "../Texture/TexturePainter.h"
+#include "../Texture/Gallery.h"
 
 namespace CG
 {
@@ -38,7 +39,6 @@ namespace CG
 				{
 					if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS) {
 						camera->zoom(-transSpeed);
-
 					}
 					else
 					{

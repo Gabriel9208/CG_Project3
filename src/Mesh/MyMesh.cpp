@@ -1,9 +1,9 @@
 #include <OpenMesh/Core/IO/MeshIO.hh>
 
 #include "MyMesh.h"
-#include "../Utilty/FacePicker.h"
+#include "../Texture/FacePicker.h"
 #include "../Utilty/Error.h"
-#include "../Utilty/TextureMapper.h"
+#include "../Texture/TextureMapper.h"
 
 namespace CG
 {
@@ -275,10 +275,6 @@ namespace CG
 		wVBOc.unbind();
 
 		wVAO.unbind();
-#pragma endregion
-
-#pragma region Texture Rendering
-		
 #pragma endregion
 		
 #pragma region FaceID Rendering

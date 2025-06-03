@@ -6,8 +6,9 @@
 #include "glm/gtx/string_cast.hpp"
 #include "../App/App.h"
 #include "../Utilty/Error.h"
-#include "../Utilty/FacePicker.h"
-#include "../Utilty/TexturePainter.h"
+#include "../Texture/FacePicker.h"
+#include "../Texture/TexturePainter.h"
+#include "../Texture/Gallery.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -22,6 +23,16 @@
 
 namespace CG {
 
+    std::vector<OpenMesh::Vec2d> glmToOpenMeshVec2(std::vector<glm::vec2> _v)
+    {
+        std::vector<OpenMesh::Vec2d> v;
+        for (auto itr = _v.begin(); itr != _v.end(); itr++)
+        {
+            v.emplace_back(OpenMesh::Vec2d(itr->x, itr->y));
+        }
+        return v;
+    }
+
     GUI::GUI(GLFWwindow* window, MainScene* _scene)
     {
         if (window == nullptr)
@@ -30,6 +41,11 @@ namespace CG {
         }
 
         init(window, _scene);
+        textureList[0] = "Sky";
+        textureSelectedIdx = 0;
+
+        styleList[0] = "Default";
+        styleSelectedIdx = 0;
     }
 
     GUI::~GUI()
@@ -95,6 +111,7 @@ namespace CG {
             if (ImGui::BeginTabItem("Gallery"))
             { // sets of textured model
 
+                galleryPanel();
                 ImGui::EndTabItem();
             }
 
@@ -113,7 +130,7 @@ namespace CG {
                 ImGui::EndTabItem();
             }
 
-            if (ImGui::BeginTabItem("Texture Factory"))
+            if (ImGui::BeginTabItem("Texture Edit"))
             {
                 // load texture
                 // modify texture on the faces (translation, rotation and scaling)
@@ -141,6 +158,33 @@ namespace CG {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
+    void GUI::galleryPanel()
+    {
+        ImGui::SeparatorText("Choose texture to apply.");
+
+        const char* combo_preview_value = styleList[styleSelectedIdx];
+
+        if (ImGui::BeginCombo("Select Texture", combo_preview_value))
+        {
+            Gallery& glry = Gallery::getInstance();
+            for (int n = 0; n < IM_ARRAYSIZE(textureList); n++)
+            {
+                const bool is_selected = (styleSelectedIdx == n);
+                if (ImGui::Selectable(styleList[n], is_selected))
+                {
+                    styleSelectedIdx = n;
+                    glry.renderStyle(std::string(styleList[styleSelectedIdx]));
+                }
+
+                if (is_selected)
+                {
+                    ImGui::SetItemDefaultFocus();
+                }
+            }
+            ImGui::EndCombo();
+        }
+    }
+
     void GUI::pickerPanel()
     {
         ImGui::SeparatorText("Usage");
@@ -155,11 +199,31 @@ namespace CG {
     }
     void GUI::texturePanel()
     {
-        ImGui::SeparatorText("Usage");
-        ImGui::Text("Translate, rotate and scale texture.\n");
+        ImGui::SeparatorText("Choose texture to apply.");
+        
+        const char* combo_preview_value = textureList[textureSelectedIdx];
 
+        if (ImGui::BeginCombo("Select Texture", combo_preview_value))
+        {
+            for (int n = 0; n < IM_ARRAYSIZE(textureList); n++)
+            {
+                const bool is_selected = (textureSelectedIdx == n);
+                if (ImGui::Selectable(textureList[n], is_selected))
+                    textureSelectedIdx = n;
+
+                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                if (is_selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+
+        ImGui::SeparatorText("Transform");
+
+        FacePicker& fp = FacePicker::getInstance();
         TextureMapper& tm = TextureMapper::getInstance();
         TexturePainter& tp = TexturePainter::getInstance();
+        Gallery& glry = Gallery::getInstance();
 
         glm::vec2 translateOffset = tm.getTranslateOffset();
         float rotateDegree = tm.getRotateDegree();
@@ -200,7 +264,27 @@ namespace CG {
             tm.scaling(scalingDegree - scaling);
             tp.updateUV();
         }
+        ImGui::TextWrapped("");
+        ImGui::InputText("Style Name", styleName, IM_ARRAYSIZE(styleName));
+        if (ImGui::Button("Save Texture Settings"))
+        {
+            if (!glry.findStyle(std::string(styleName)))
+            {
+                glry.registerStyle(std::string(styleName));
+            }
 
+            Appearance app;
+            UVSet uv;
+
+            uv.UVs = glmToOpenMeshVec2(tp.getUVCoords());
+            uv.heIDs = tp.getHeIdx();
+
+            app.textureName = std::string(textureList[textureSelectedIdx]);
+            app.faceIDs.emplace_back(fp.getFacesPicked());
+            app.UVSets.emplace_back(uv);
+
+            glry.addAppearance(styleName, app);
+        }
 
     }
 }
