@@ -12,7 +12,7 @@ namespace CG
 {
 	TextureMapper TextureMapper::instance;
 
-	TextureMapper::TextureMapper() : referenceMesh(nullptr), uvCenter(0, 0)
+	TextureMapper::TextureMapper() : referenceMesh(nullptr), uvCenter(0, 0), translateOffset(0, 0), rotateDegree(0), scalingDegree(0)
 	{}
 
 
@@ -33,6 +33,9 @@ namespace CG
 		allUV.clear();
 		referenceMesh = mesh;
 		vertices = _vertices;
+		translateOffset = glm::vec2(0, 0);
+		rotateDegree = 0;
+		scalingDegree = 0;
 
 		// init boundary
 		halfedgeToVertex(orderedBoundaryEdges);
@@ -51,10 +54,14 @@ namespace CG
 		}
 
 		calculateUVCenter();
+
+		translateOffset[0] += x;
+		translateOffset[1] += y;
 	}
 
-	void TextureMapper::rotate(double radian) 
+	void TextureMapper::rotate(double degree) 
 	{
+		double radian = glm::radians(degree);
 		for (auto itr = allUV.begin(); itr != allUV.end(); itr++)
 		{
 			glm::dvec2 holder(itr->second[0] - uvCenter[0], itr->second[1] - uvCenter[1]);
@@ -69,6 +76,8 @@ namespace CG
 			itr->second[0] = holder.x;
 			itr->second[1] = holder.y;
 		}
+
+		rotateDegree += degree;
 	}
 
 	void TextureMapper::scaling(double scale)
@@ -77,9 +86,23 @@ namespace CG
 		{
 			glm::dvec2 direction = d2d(itr->second) - d2d(uvCenter);
 
+			double dirLength = glm::length(direction);
+			if (dirLength < 1e-8) {
+				std::cout << "Cannot scale down anymore.\n";
+				return;  
+			}
+		}
+
+		for (auto itr = allUV.begin(); itr != allUV.end(); itr++)
+		{
+			glm::dvec2 direction = d2d(itr->second) - d2d(uvCenter);
+			
+			// Move proportional to distance from center
 			itr->second[0] += scale * direction[0];
 			itr->second[1] += scale * direction[1];
 		}
+
+		scalingDegree += scale;
 	} 
 
 	void TextureMapper::halfedgeToVertex(std::vector<OpenMesh::HalfedgeHandle>& orderedBoundaryEdges)

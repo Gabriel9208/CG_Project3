@@ -7,6 +7,7 @@
 #include "../App/App.h"
 #include "../Utilty/Error.h"
 #include "../Utilty/FacePicker.h"
+#include "../Utilty/TexturePainter.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -116,6 +117,8 @@ namespace CG {
             {
                 // load texture
                 // modify texture on the faces (translation, rotation and scaling)
+
+                texturePanel();
                 ImGui::EndTabItem();
             }
 
@@ -128,8 +131,6 @@ namespace CG {
             
             ImGui::EndTabBar();
         }
-        
-        
         
         ImGui::End();
     }
@@ -151,5 +152,55 @@ namespace CG {
         {
             fp.setRange(range);
         }
+    }
+    void GUI::texturePanel()
+    {
+        ImGui::SeparatorText("Usage");
+        ImGui::Text("Translate, rotate and scale texture.\n");
+
+        TextureMapper& tm = TextureMapper::getInstance();
+        TexturePainter& tp = TexturePainter::getInstance();
+
+        glm::vec2 translateOffset = tm.getTranslateOffset();
+        float rotateDegree = tm.getRotateDegree();
+        float scalingDegree = tm.getScalingDegree();
+
+        const glm::vec2 trans = translateOffset;
+        const double rotate = rotateDegree;
+        const double scaling = scalingDegree;
+        
+        ImGui::SeparatorText("Translation");
+        if (ImGui::DragFloat("x (Translate)", &translateOffset[0], 0.05f, -FLT_MAX, FLT_MAX, "%.3f"))
+        {
+            double x = translateOffset[0] - trans[0];
+            double y = translateOffset[1] - trans[1];
+            tm.translate(x, y);
+            tp.updateUV();
+        }
+        if (ImGui::DragFloat("y (Translate)", &translateOffset[1], 0.05f, -FLT_MAX, FLT_MAX, "%.3f"))
+        {
+            double x = translateOffset[0] - trans[0];
+            double y = translateOffset[1] - trans[1];
+            tm.translate(x, y);
+            tp.updateUV();
+
+        }
+
+        ImGui::SeparatorText("Rotation");
+        if (ImGui::DragFloat("Rotation Degree", &rotateDegree, 0.05f, -360, 360, "%.3f"))
+        {
+            tm.rotate(rotateDegree - rotate);
+            tp.updateUV();
+
+        }
+
+        ImGui::SeparatorText("Scale");
+        if (ImGui::DragFloat("Scaling Degree", &scalingDegree, 0.05f, -100, 100, "%.3f"))
+        {
+            tm.scaling(scalingDegree - scaling);
+            tp.updateUV();
+        }
+
+
     }
 }

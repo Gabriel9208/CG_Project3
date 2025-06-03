@@ -22,6 +22,10 @@ namespace CG
 
 		OpenMesh::Vec2d uvCenter;
 
+		glm::vec2 translateOffset;
+		double rotateDegree;
+		double scalingDegree;
+
 		TextureMapper();
 		~TextureMapper() {}
 
@@ -47,6 +51,9 @@ namespace CG
 		void scaling(double scale);
 
 		inline std::map<OpenMesh::VertexHandle, OpenMesh::Vec2d> getAllUVMap() { return allUV; }
+		inline glm::vec2 getTranslateOffset() const { return translateOffset; };
+		inline double getRotateDegree() const { return rotateDegree; };
+		inline double getScalingDegree() const { return scalingDegree; };
 	};
 
 }

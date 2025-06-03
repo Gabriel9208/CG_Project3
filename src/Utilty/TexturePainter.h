@@ -50,6 +50,8 @@ namespace CG
 
 		void init(int display_w, int display_h);
 		void update(MyMesh* mesh);
+		void updateUV();
+
 		void render(const glm::mat4 proj, const glm::mat4 view);
 
 	};

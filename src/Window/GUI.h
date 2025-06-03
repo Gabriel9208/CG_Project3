@@ -29,6 +29,7 @@ namespace CG {
 		void importPanel();
 
 		void pickerPanel();
+		void texturePanel();
 
 		void _render();
 

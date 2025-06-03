@@ -178,6 +178,62 @@ namespace CG
 		drawCount = positions.size();
 	}
 
+	// only update uv
+	void TexturePainter::updateUV()
+	{
+		TextureMapper& tm = TextureMapper::getInstance();
+		FacePicker& fp = FacePicker::getInstance();
+		auto pickedFaces = fp.getFacesPicked();
+
+		std::vector<glm::vec2> uvCoords;
+
+		const auto& uvMap = tm.getAllUVMap();
+
+		for (auto faceId = pickedFaces.begin(); faceId != pickedFaces.end(); ++faceId)
+		{
+			OpenMesh::FaceHandle fh = referenceMesh->face_handle(*faceId);
+
+			std::vector<OpenMesh::VertexHandle> vhandles;
+
+			for (MyMesh::FaceVertexIter fv_it = referenceMesh->fv_iter(fh); fv_it.is_valid(); ++fv_it)
+			{
+				vhandles.push_back(*fv_it);
+			}
+
+			if (vhandles.size() == 3)
+			{
+
+				for (int i = 0; i < 3; ++i)
+				{
+					auto vh = vhandles[i];
+					auto it = uvMap.find(vh);
+
+					if (it != uvMap.end())
+						uvCoords.emplace_back(it->second[0], it->second[1]);
+					else
+						uvCoords.emplace_back(0.0f, 0.0f);
+				}
+			}
+		}
+
+		if (uvCoords.size() > 0)
+		{
+			tVAO->bind();
+
+			tVBOu->bind();
+			tVBOu->setData(uvCoords, GL_DYNAMIC_DRAW);
+			GLCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0));
+			GLCall(glEnableVertexAttribArray(2));
+			tVBOu->unbind();
+
+			tVAO->unbind();
+
+			//glBindFramebuffer(GL_FRAMEBUFFER, decalFBO);
+
+			//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
+	}
+
 	void TexturePainter::render(const glm::mat4 proj, const glm::mat4 view)
 	{
 		program->use();
