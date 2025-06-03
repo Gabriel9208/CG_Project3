@@ -85,13 +85,51 @@ namespace CG {
     void GUI::mainPanel()
     {
         ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x * 0.2, ImGui::GetIO().DisplaySize.y), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x * 0.3, ImGui::GetIO().DisplaySize.y), ImGuiCond_Always);
         ImGui::Begin("Configurations", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
-        if (ImGui::CollapsingHeader("Objects Visibility", ImGuiTreeNodeFlags_DefaultOpen))
+        
+        if (ImGui::BeginTabBar("Mode"))
         {
-            pickerPanel();
+            if (ImGui::BeginTabItem("Gallery"))
+            { // sets of textured model
+
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("Face Picker"))
+            {
+                // picking face enable
+                // picjing face related functionalities
+
+                /*
+                if (ImGui::CollapsingHeader("Objects Visibility", ImGuiTreeNodeFlags_DefaultOpen))
+                {
+                    pickerPanel();
+                }
+                */
+                pickerPanel();
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("Texture Factory"))
+            {
+                // load texture
+                // modify texture on the faces (translation, rotation and scaling)
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("Export Station"))
+            {
+                // export to file
+                // add to gallery
+                ImGui::EndTabItem();
+            }            
+            
+            ImGui::EndTabBar();
         }
+        
+        
         
         ImGui::End();
     }

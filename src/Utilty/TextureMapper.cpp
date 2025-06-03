@@ -12,7 +12,7 @@ namespace CG
 {
 	TextureMapper TextureMapper::instance;
 
-	TextureMapper::TextureMapper() : referenceMesh(nullptr)
+	TextureMapper::TextureMapper() : referenceMesh(nullptr), uvCenter(0, 0)
 	{}
 
 
@@ -41,6 +41,46 @@ namespace CG
 		// calculate inner points
 		calculateInnerPointUV();
 	}
+
+	void TextureMapper::translate(double x, double y)
+	{
+		for (auto itr = allUV.begin(); itr != allUV.end(); itr++)
+		{
+			itr->second[0] += x;
+			itr->second[1] += y;
+		}
+
+		calculateUVCenter();
+	}
+
+	void TextureMapper::rotate(double radian) 
+	{
+		for (auto itr = allUV.begin(); itr != allUV.end(); itr++)
+		{
+			glm::dvec2 holder(itr->second[0] - uvCenter[0], itr->second[1] - uvCenter[1]);
+
+			glm::dmat2 rotate(glm::vec2(std::cos(radian), std::sin(radian)), glm::vec2(-std::sin(radian), std::cos(radian)));
+			
+			holder = rotate * holder;
+
+			holder.x += uvCenter[0];
+			holder.y += uvCenter[1];
+
+			itr->second[0] = holder.x;
+			itr->second[1] = holder.y;
+		}
+	}
+
+	void TextureMapper::scaling(double scale)
+	{
+		for (auto itr = allUV.begin(); itr != allUV.end(); itr++)
+		{
+			glm::dvec2 direction = d2d(itr->second) - d2d(uvCenter);
+
+			itr->second[0] += scale * direction[0];
+			itr->second[1] += scale * direction[1];
+		}
+	} 
 
 	void TextureMapper::halfedgeToVertex(std::vector<OpenMesh::HalfedgeHandle>& orderedBoundaryEdges)
 	{
@@ -269,5 +309,27 @@ namespace CG
 		weight = (std::tan(angleLast / 2) + std::tan(angleNext / 2)) / (currPos - centerPos).length();
 
 		return weight;
+	}
+
+	void TextureMapper::calculateUVCenter()
+	{
+		if (allUV.size() == 0)
+		{
+			return;
+		}
+
+		double x = 0, y = 0;
+		for (auto itr = allUV.begin(); itr != allUV.end(); itr++)
+		{
+			x += itr->second[0];
+			y += itr->second[1];
+		}
+
+		uvCenter[0] = x / allUV.size();
+		uvCenter[1] = y / allUV.size();
+	}
+	glm::dvec2 TextureMapper::d2d(OpenMesh::Vec2d v)
+	{
+		return glm::dvec2(v[0], v[1]);
 	}
 }

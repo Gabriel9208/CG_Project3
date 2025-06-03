@@ -20,8 +20,8 @@ namespace CG
 		tMatKsID(-1),
 		texture(nullptr),
 		model(glm::mat4(1.0)),
-		colorAmbient(glm::vec3(0.2, 0.2, 0.2)),
-		colorDiffuse(glm::vec3(1.0, 1.0, 0.2)),
+		colorAmbient(glm::vec3(1, 1, 1)),
+		colorDiffuse(glm::vec3(1.0, 1.0, 1.0)),
 		colorSpecular(glm::vec3(1.0, 1.0, 1.0)),
 		colorLine(glm::vec3(0.8, 0.8, 0.8)),
 		drawCount(0)

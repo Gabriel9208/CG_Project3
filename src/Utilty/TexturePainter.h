@@ -25,7 +25,6 @@ namespace CG
 		VBO<glm::vec2>* tVBOu;
 		UBO* tUBO;
 
-
 		GLuint tModelID;
 		GLuint tMatKaID;
 		GLuint tMatKdID;
@@ -52,5 +51,6 @@ namespace CG
 		void init(int display_w, int display_h);
 		void update(MyMesh* mesh);
 		void render(const glm::mat4 proj, const glm::mat4 view);
+
 	};
 }

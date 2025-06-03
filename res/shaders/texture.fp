@@ -26,7 +26,7 @@ void main(void)
     vec4 texColor = texture(Texture, vTexCoord);
 
     float diff = max(0.0, dot(normalize(vVaryingNormal), normalize(vVaryingLightDir)));
-    vec4 diffuse = diff * texColor * vec4(Material.Kd, 1);
+    vec4 diffuse = diff * vec4(Material.Kd, 1);
 
     vec4 ambient = ambientColor * vec4(Material.Ka, 1);
 
@@ -38,7 +38,7 @@ void main(void)
     }
     vec4 specular = spec * specularColor * vec4(Material.Ks, 1);
 
-    vFragColor = diffuse + ambient + specular;
+    vFragColor = (diffuse + ambient + specular) * texColor;
     //vFragColor = vec4(1.0, 0.5, 0.6, 1.0);
 }
 	
