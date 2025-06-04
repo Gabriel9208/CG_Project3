@@ -310,7 +310,7 @@ namespace CG {
                 glry.registerStyle(std::string(styleName));
             }
 
-            Appearance app;
+            /*Appearance app;
             UVSet uv;
 
             uv.UVs = glmToOpenMeshVec2(tp.getUVCoords());
@@ -320,7 +320,8 @@ namespace CG {
             app.faceIDs.emplace_back(fp.getFacesPicked());
             app.UVSets.emplace_back(uv);
 
-            glry.addAppearance(styleName, app);
+            glry.addAppearance(styleName, app);*/
+            glry.updataSaveTextureDatas(styleName, tp.getSaveTextureDatas());
         }
 
     }

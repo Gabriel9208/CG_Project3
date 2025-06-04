@@ -94,95 +94,11 @@ namespace CG
 
 		currentTextureData.clear();
 		//uvCoords.clear();
-		heIdx.clear();
-		drawCount.clear();
-		textureName.clear();
+		//heIdx.clear();
+		//drawCount.clear();
+		//textureName.clear();
 
-		unsigned int accumulatePointCounts = 0;
-
-		for (auto appearance = style->appearances.begin(); appearance != style->appearances.end(); appearance++)
-		{
-			textureName.emplace_back(appearance->textureName);
-			currentTextureData.textureName = appearance->textureName;
-			for (auto idx = 0; idx < appearance->faceIDs.size(); idx++)
-			{
-				unsigned int uvIdx = 0;
-
-				auto pickedFaces = appearance->faceIDs[idx];
-
-				//============================
-				for (auto faceId = pickedFaces.begin(); faceId != pickedFaces.end(); ++faceId)
-				{
-					OpenMesh::FaceHandle fh = referenceMesh->face_handle(*faceId);
-
-					std::vector<OpenMesh::VertexHandle> vhandles;
-
-					for (MyMesh::FaceVertexIter fv_it = referenceMesh->fv_iter(fh); fv_it.is_valid(); ++fv_it)
-					{
-						vhandles.push_back(*fv_it);
-					}
-
-					if (vhandles.size() == 3)
-					{
-						glm::vec3 p[3];
-
-						for (int i = 0; i < 3; ++i)
-						{
-							auto vh = vhandles[i];
-							auto pos = referenceMesh->point(vh);
-							p[i] = glm::vec3(pos[0], pos[1], pos[2]);
-
-							currentTextureData.positions.push_back(p[i]);
-
-							auto it = appearance->UVSets[idx];
-							currentTextureData.uvCoords.emplace_back(it.UVs[uvIdx][0], it.UVs[uvIdx][1]);
-							uvIdx++;
-						}
-
-						glm::vec3 edge1 = p[1] - p[0];
-						glm::vec3 edge2 = p[2] - p[0];
-						glm::vec3 normal = glm::normalize(glm::cross(edge1, edge2));
-
-						currentTextureData.faceNormals.push_back(normal);
-						currentTextureData.faceNormals.push_back(normal);
-						currentTextureData.faceNormals.push_back(normal);
-					}
-				}
-			}
-
-			TextureManager& tmg = TextureManager::getInstance();
-
-			drawCount.emplace_back(currentTextureData.positions.size());
-			accumulatePointCounts += currentTextureData.positions.size();
-		}
-
-		if (currentTextureData.positions.size() > 0)
-		{
-			tVAO->bind();
-			tVBOp->bind();
-			tVBOp->setData(currentTextureData.positions, GL_DYNAMIC_DRAW);
-			GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0));
-			GLCall(glEnableVertexAttribArray(0));
-			tVBOp->unbind();
-
-			tVBOn->bind();
-			tVBOn->setData(currentTextureData.faceNormals, GL_DYNAMIC_DRAW);
-			GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0));
-			GLCall(glEnableVertexAttribArray(1));
-			tVBOn->unbind();
-
-			tVBOu->bind();
-			tVBOu->setData(currentTextureData.uvCoords, GL_DYNAMIC_DRAW);
-			GLCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0));
-			GLCall(glEnableVertexAttribArray(2));
-			tVBOu->unbind();
-
-			tVAO->unbind();
-
-			//glBindFramebuffer(GL_FRAMEBUFFER, decalFBO);
-
-			//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		}
+		saveTextureDatas = style->saveTextureDatas;
 	}
 
 	void TexturePainter::update(std::string _textureName, MyMesh* mesh)
@@ -373,9 +289,10 @@ namespace CG
 		tUBO->fillInData(0, sizeof(glm::mat4), &view);
 		tUBO->fillInData(sizeof(glm::mat4), sizeof(glm::mat4), &proj);
 
-		glDisable(GL_DEPTH_TEST);
+		//glDisable(GL_DEPTH_TEST);
+		glDepthMask(GL_FALSE);
 		glEnable(GL_POLYGON_OFFSET_FILL);
-		glPolygonOffset(-1.0f, -1.0f);
+		glPolygonOffset(-1.5f, -1.5f);
 
 		TextureManager& tmg = TextureManager::getInstance();
 		
@@ -429,6 +346,7 @@ namespace CG
 		}
 		
 		glDisable(GL_POLYGON_OFFSET_FILL);
+		glDepthMask(GL_TRUE);
 	}
 
 	void TexturePainter::clearSaveTextureDatas()
