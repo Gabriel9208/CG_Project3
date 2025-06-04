@@ -68,12 +68,28 @@ namespace CG
 				}
 				if (key == GLFW_KEY_A) // camera go left
 				{
-					if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS) {
-						camera->flatTranslate(-transSpeed, 0);
+					if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) 
+					{	
+						camera->rotateAround(-rotatSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+					}
+					else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+					{
+						FacePicker& fp = FacePicker::getInstance();
+						fp.chooseAllFace();
+
+						app->getPatch()->init(app->getMainScene()->getMesh(), fp.getFacesPicked());
+
+						TextureMapper& tm = TextureMapper::getInstance();
+						tm.Map(app->getMainScene()->getMesh(), app->getPatch()->getOrderedBoundaryEdges(), &app->getPatch()->getVertices());
+
+						app->getConvexWindow()->updateGraph();
+
+						TexturePainter& tp = TexturePainter::getInstance();
+						tp.update(std::string(app->getGUIChoosedTexture()), app->getMainScene()->getMesh());
 					}
 					else
 					{
-						camera->rotateAround(-rotatSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+						camera->flatTranslate(-transSpeed, 0);
 
 					}
 				}
@@ -84,6 +100,16 @@ namespace CG
 				if (key == GLFW_KEY_Q) // camera go down
 				{
 					camera->flatTranslate(0, -transSpeed);
+				}
+				if (key == GLFW_KEY_ENTER) 
+				{
+					TexturePainter& tp = TexturePainter::getInstance();
+					tp.save();
+				}
+				if (key == GLFW_KEY_BACKSPACE)
+				{
+					TexturePainter& tp = TexturePainter::getInstance();
+					tp.clearSaveTextureDatas();
 				}
 			}
 		}
@@ -187,6 +213,9 @@ namespace CG
 		tmg.init();
 		tmg.registerTexture("../../res/texture/test.jpg", "Sky");
 		tmg.registerTexture("../../res/texture/test2.jpg", "B");
+		tmg.registerTexture("../../res/texture/wool.jpg", "Wool");
+		tmg.registerTexture("../../res/texture/wool2.jpg", "Wool2");
+		tmg.registerTexture("../../res/texture/elf.png", "Elf");
 
 		TexturePainter& tp = TexturePainter::getInstance();
 

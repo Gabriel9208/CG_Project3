@@ -30,6 +30,9 @@ namespace CG
 		for (auto id = faceId.begin(); id != faceId.end(); id++)
 		{
 			OpenMesh::FaceHandle fh = referenceMesh->face_handle(*id);
+
+			if (!referenceMesh->is_valid_handle(fh)) continue;
+
 			faces.insert(fh);
 
 			for (MyMesh::FaceEdgeIter fe_itr = referenceMesh->fe_iter(fh); fe_itr.is_valid(); fe_itr++)
@@ -57,6 +60,9 @@ namespace CG
 
 			OpenMesh::FaceHandle fh0 = referenceMesh->face_handle(heh0);
 			OpenMesh::FaceHandle fh1 = referenceMesh->face_handle(heh1);
+
+			if (!referenceMesh->is_valid_handle(fh0)) continue;
+			if (!referenceMesh->is_valid_handle(fh1)) continue;
 
 			if (heh0.is_valid() && heh1.is_valid())
 			{

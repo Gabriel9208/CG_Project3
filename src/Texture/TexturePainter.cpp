@@ -92,18 +92,18 @@ namespace CG
 		TextureMapper& tm = TextureMapper::getInstance();
 		FacePicker& fp = FacePicker::getInstance();
 
-		std::vector<glm::vec3> positions;
-		uvCoords.clear();
+		currentTextureData.clear();
+		//uvCoords.clear();
 		heIdx.clear();
 		drawCount.clear();
 		textureName.clear();
-		std::vector<glm::vec3> faceNormals;
 
 		unsigned int accumulatePointCounts = 0;
 
 		for (auto appearance = style->appearances.begin(); appearance != style->appearances.end(); appearance++)
 		{
 			textureName.emplace_back(appearance->textureName);
+			currentTextureData.textureName = appearance->textureName;
 			for (auto idx = 0; idx < appearance->faceIDs.size(); idx++)
 			{
 				unsigned int uvIdx = 0;
@@ -132,10 +132,10 @@ namespace CG
 							auto pos = referenceMesh->point(vh);
 							p[i] = glm::vec3(pos[0], pos[1], pos[2]);
 
-							positions.push_back(p[i]);
+							currentTextureData.positions.push_back(p[i]);
 
 							auto it = appearance->UVSets[idx];
-							uvCoords.emplace_back(it.UVs[uvIdx][0], it.UVs[uvIdx][1]);
+							currentTextureData.uvCoords.emplace_back(it.UVs[uvIdx][0], it.UVs[uvIdx][1]);
 							uvIdx++;
 						}
 
@@ -143,9 +143,9 @@ namespace CG
 						glm::vec3 edge2 = p[2] - p[0];
 						glm::vec3 normal = glm::normalize(glm::cross(edge1, edge2));
 
-						faceNormals.push_back(normal);
-						faceNormals.push_back(normal);
-						faceNormals.push_back(normal);
+						currentTextureData.faceNormals.push_back(normal);
+						currentTextureData.faceNormals.push_back(normal);
+						currentTextureData.faceNormals.push_back(normal);
 					}
 				}
 				//===================
@@ -153,27 +153,27 @@ namespace CG
 
 			TextureManager& tmg = TextureManager::getInstance();
 
-			drawCount.emplace_back(positions.size());
-			accumulatePointCounts += positions.size();
+			drawCount.emplace_back(currentTextureData.positions.size());
+			accumulatePointCounts += currentTextureData.positions.size();
 		}
 
-		if (positions.size() > 0)
+		if (currentTextureData.positions.size() > 0)
 		{
 			tVAO->bind();
 			tVBOp->bind();
-			tVBOp->setData(positions, GL_DYNAMIC_DRAW);
+			tVBOp->setData(currentTextureData.positions, GL_DYNAMIC_DRAW);
 			GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0));
 			GLCall(glEnableVertexAttribArray(0));
 			tVBOp->unbind();
 
 			tVBOn->bind();
-			tVBOn->setData(faceNormals, GL_DYNAMIC_DRAW);
+			tVBOn->setData(currentTextureData.faceNormals, GL_DYNAMIC_DRAW);
 			GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0));
 			GLCall(glEnableVertexAttribArray(1));
 			tVBOn->unbind();
 
 			tVBOu->bind();
-			tVBOu->setData(uvCoords, GL_DYNAMIC_DRAW);
+			tVBOu->setData(currentTextureData.uvCoords, GL_DYNAMIC_DRAW);
 			GLCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0));
 			GLCall(glEnableVertexAttribArray(2));
 			tVBOu->unbind();
@@ -193,19 +193,21 @@ namespace CG
 		FacePicker& fp = FacePicker::getInstance();
 		auto pickedFaces = fp.getFacesPicked();
 
-		std::vector<glm::vec3> positions;
-		uvCoords.clear();
+		currentTextureData.clear();
+		//uvCoords.clear();
 		heIdx.clear();
 		drawCount.clear();
 		textureName.clear();
-		std::vector<glm::vec3> faceNormals;
-
+		
+		currentTextureData.textureName = _textureName;
 		textureName.push_back(_textureName);
 		const auto& uvMap = tm.getAllUVMap();
 
 		for (auto faceId = pickedFaces.begin(); faceId != pickedFaces.end(); ++faceId)
 		{
 			OpenMesh::FaceHandle fh = referenceMesh->face_handle(*faceId);
+
+			if (!referenceMesh->is_valid_handle(fh)) continue;
 
 			std::vector<OpenMesh::VertexHandle> vhandles;
 
@@ -229,42 +231,42 @@ namespace CG
 					auto pos = referenceMesh->point(vh);
 					p[i] = glm::vec3(pos[0], pos[1], pos[2]);
 
-					positions.push_back(p[i]);
+					currentTextureData.positions.push_back(p[i]);
 
 					auto it = uvMap.find(vh);
 					if (it != uvMap.end())
-						uvCoords.emplace_back(it->second[0], it->second[1]);
+						currentTextureData.uvCoords.emplace_back(it->second[0], it->second[1]);
 					else
-						uvCoords.emplace_back(0.0f, 0.0f);
+						currentTextureData.uvCoords.emplace_back(0.0f, 0.0f);
 				}
 
 				glm::vec3 edge1 = p[1] - p[0];
 				glm::vec3 edge2 = p[2] - p[0];
 				glm::vec3 normal = glm::normalize(glm::cross(edge1, edge2));
 
-				faceNormals.push_back(normal);
-				faceNormals.push_back(normal);
-				faceNormals.push_back(normal);
+				currentTextureData.faceNormals.push_back(normal);
+				currentTextureData.faceNormals.push_back(normal);
+				currentTextureData.faceNormals.push_back(normal);
 			}
 		}
 
-		if (positions.size() > 0)
+		if (currentTextureData.positions.size() > 0)
 		{
 			tVAO->bind();
 			tVBOp->bind();
-			tVBOp->setData(positions, GL_DYNAMIC_DRAW);
+			tVBOp->setData(currentTextureData.positions, GL_DYNAMIC_DRAW);
 			GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0));
 			GLCall(glEnableVertexAttribArray(0));
 			tVBOp->unbind();
 
 			tVBOn->bind();
-			tVBOn->setData(faceNormals, GL_DYNAMIC_DRAW);
+			tVBOn->setData(currentTextureData.faceNormals, GL_DYNAMIC_DRAW);
 			GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0));
 			GLCall(glEnableVertexAttribArray(1));
 			tVBOn->unbind();
 
 			tVBOu->bind();
-			tVBOu->setData(uvCoords, GL_DYNAMIC_DRAW);
+			tVBOu->setData(currentTextureData.uvCoords, GL_DYNAMIC_DRAW);
 			GLCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0));
 			GLCall(glEnableVertexAttribArray(2));
 			tVBOu->unbind();
@@ -275,7 +277,29 @@ namespace CG
 			//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
 
-		drawCount.emplace_back(positions.size());
+		drawCount.emplace_back(currentTextureData.positions.size());
+	}
+
+	void TexturePainter::save()
+	{
+		/*bool isFound = false;
+		for (int i = 0; i < saveTextureDatas.size(); i++)
+		{
+			if (currentTextureData.textureName == saveTextureDatas[i].textureName)
+			{
+				saveTextureDatas[i].clear();
+				saveTextureDatas[i] = currentTextureData;
+				isFound = true;
+				break;
+			}
+		}
+
+		if (!isFound)
+		{
+			saveTextureDatas.push_back(currentTextureData);
+		}*/
+
+		saveTextureDatas.push_back(currentTextureData);
 	}
 
 	// only update uv
@@ -285,13 +309,16 @@ namespace CG
 		FacePicker& fp = FacePicker::getInstance();
 		auto pickedFaces = fp.getFacesPicked();
 
-		uvCoords.clear();
+		currentTextureData.uvCoords.clear();
+		//uvCoords.clear();
 		heIdx.clear();
 		const auto& uvMap = tm.getAllUVMap();
 
 		for (auto faceId = pickedFaces.begin(); faceId != pickedFaces.end(); ++faceId)
 		{
 			OpenMesh::FaceHandle fh = referenceMesh->face_handle(*faceId);
+
+			if (!referenceMesh->is_valid_handle(fh)) continue;
 
 			std::vector<OpenMesh::VertexHandle> vhandles;
 
@@ -313,19 +340,19 @@ namespace CG
 					auto it = uvMap.find(vh);
 
 					if (it != uvMap.end())
-						uvCoords.emplace_back(it->second[0], it->second[1]);
+						currentTextureData.uvCoords.emplace_back(it->second[0], it->second[1]);
 					else
-						uvCoords.emplace_back(0.0f, 0.0f);
+						currentTextureData.uvCoords.emplace_back(0.0f, 0.0f);
 				}
 			}
 		}
 
-		if (uvCoords.size() > 0)
+		if (currentTextureData.uvCoords.size() > 0)
 		{
 			tVAO->bind();
 
 			tVBOu->bind();
-			tVBOu->setData(uvCoords, GL_DYNAMIC_DRAW);
+			tVBOu->setData(currentTextureData.uvCoords, GL_DYNAMIC_DRAW);
 			GLCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0));
 			GLCall(glEnableVertexAttribArray(2));
 			tVBOu->unbind();
@@ -347,10 +374,55 @@ namespace CG
 		tUBO->fillInData(0, sizeof(glm::mat4), &view);
 		tUBO->fillInData(sizeof(glm::mat4), sizeof(glm::mat4), &proj);
 
+		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_POLYGON_OFFSET_FILL);
 		glPolygonOffset(-1.0f, -1.0f);
 
 		TextureManager& tmg = TextureManager::getInstance();
+		
+
+		for (int i = 0; i < saveTextureDatas.size(); i++)
+		{
+			tVBOp->bind();
+			tVBOp->setData(saveTextureDatas[i].positions, GL_DYNAMIC_DRAW);
+			GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0));
+			GLCall(glEnableVertexAttribArray(0));
+			tVBOp->unbind();
+
+			tVBOn->bind();
+			tVBOn->setData(saveTextureDatas[i].faceNormals, GL_DYNAMIC_DRAW);
+			GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0));
+			GLCall(glEnableVertexAttribArray(1));
+			tVBOn->unbind();
+
+			tVBOu->bind();
+			tVBOu->setData(saveTextureDatas[i].uvCoords, GL_DYNAMIC_DRAW);
+			GLCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0));
+			GLCall(glEnableVertexAttribArray(2));
+			tVBOu->unbind();
+		
+			tmg.use(program->getId(), "Texture", saveTextureDatas[i].textureName);
+			GLCall(glDrawArrays(GL_TRIANGLES, 0, saveTextureDatas[i].positions.size()));
+		}	
+
+		tVBOp->bind();
+		tVBOp->setData(currentTextureData.positions, GL_DYNAMIC_DRAW);
+		GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0));
+		GLCall(glEnableVertexAttribArray(0));
+		tVBOp->unbind();
+
+		tVBOn->bind();
+		tVBOn->setData(currentTextureData.faceNormals, GL_DYNAMIC_DRAW);
+		GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0));
+		GLCall(glEnableVertexAttribArray(1));
+		tVBOn->unbind();
+
+		tVBOu->bind();
+		tVBOu->setData(currentTextureData.uvCoords, GL_DYNAMIC_DRAW);
+		GLCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0));
+		GLCall(glEnableVertexAttribArray(2));
+		tVBOu->unbind();
+
 		for (int i = 0; i < drawCount.size(); i++)
 		{
 			tmg.use(program->getId(), "Texture", textureName[i]);
@@ -358,5 +430,10 @@ namespace CG
 		}
 		
 		glDisable(GL_POLYGON_OFFSET_FILL);
+	}
+
+	void TexturePainter::clearSaveTextureDatas()
+	{
+		saveTextureDatas.clear();
 	}
 }

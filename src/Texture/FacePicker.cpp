@@ -26,6 +26,28 @@ namespace CG
 		range = _range;
 	}
 
+	void FacePicker::chooseAllFace()
+	{
+		for (MyMesh::FaceIter f_it = mesh->faces_begin(); f_it != mesh->faces_end(); ++f_it)
+		{
+			FaceHandle fh = *f_it;
+
+			if (!mesh->is_valid_handle(fh)) continue;
+
+			unsigned int current_face_id = fh.idx() + 1;
+			pickedFaces.insert(current_face_id);
+
+			for (MyMesh::FaceEdgeIter fe_itr = mesh->fe_iter(fh); fe_itr.is_valid(); ++fe_itr)
+			{
+				OpenMesh::EdgeHandle eh = *fe_itr;
+				mesh->set_color(eh, selectedLineColor);
+
+				std::vector<glm::vec3> v = { f2f(selectedLineColor), f2f(selectedLineColor) };
+				mesh->setWVBOcSubData(eh.idx() * 2, 2, &v);
+			}
+		}
+	}
+
 	void FacePicker::chooseFace(unsigned int height, double _xpos, double _ypos, glm::mat4 view, glm::mat4 proj, GLuint textureID)
 	{
 		float depthVal = 0;
@@ -69,6 +91,9 @@ namespace CG
 		for (auto faceId = pickedFaces.begin(); faceId != pickedFaces.end(); faceId++)
 		{
 			OpenMesh::FaceHandle fh = mesh->face_handle(*faceId);
+
+			if (!mesh->is_valid_handle(fh)) continue;
+
 			for (MyMesh::FaceEdgeIter fe_itr = mesh->fe_iter(fh); fe_itr.is_valid(); fe_itr++)
 			{
 				OpenMesh::EdgeHandle eh = *fe_itr;
@@ -95,6 +120,9 @@ namespace CG
 		for (auto faceId = pickedFaces.begin(); faceId != pickedFaces.end(); faceId++) 
 		{
 			OpenMesh::FaceHandle fh = mesh->face_handle(*faceId);
+
+			if (!mesh->is_valid_handle(fh)) continue;
+
 			for (MyMesh::FaceEdgeIter fe_itr = mesh->fe_iter(fh); fe_itr.is_valid(); fe_itr++)
 			{
 				OpenMesh::EdgeHandle eh = *fe_itr;
