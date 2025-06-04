@@ -50,12 +50,6 @@
     <ClCompile Include="..\src\Graphic\VAO.cpp">
       <Filter>Graphic</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Graphic\Material\Material.cpp">
-      <Filter>Graphic\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Graphic\Material\MaterialManager.cpp">
-      <Filter>Graphic\Material</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Graphic\Material\Texture.cpp">
       <Filter>Graphic\Material</Filter>
     </ClCompile>
@@ -97,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="..\src\Texture\Gallery.cpp">
       <Filter>Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Graphic\Material\TextureManager.cpp">
+      <Filter>Graphic\Material</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -192,12 +189,6 @@
     <ClInclude Include="..\src\Graphic\VBO.h">
       <Filter>Graphic</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Graphic\Material\Material.h">
-      <Filter>Graphic\Material</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Graphic\Material\MaterialManager.h">
-      <Filter>Graphic\Material</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Graphic\Material\Texture.h">
       <Filter>Graphic\Material</Filter>
     </ClInclude>
@@ -240,6 +231,9 @@
     </ClInclude>
     <ClInclude Include="..\src\Texture\Gallery.h">
       <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Graphic\Material\TextureManager.h">
+      <Filter>Graphic\Material</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

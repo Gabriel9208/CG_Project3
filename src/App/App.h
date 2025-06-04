@@ -32,6 +32,7 @@ namespace CG
 
         inline Patch* getPatch() { return patch; }
         inline MainScene* getMainScene() { return mainScene; }
+        inline std::string getGUIChoosedTexture() { return gui->getCurrentTexture(); }
         inline void setWidth(unsigned int w) { width = w; }
         inline void setHeight(unsigned int h) { height = h; }
 

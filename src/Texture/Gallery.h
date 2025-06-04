@@ -48,5 +48,6 @@ namespace CG
 
 		inline std::vector<Style>& getStyles() { return styles; }
 		inline bool findStyle(std::string name) { return nameIdxMap.find(name) != nameIdxMap.end(); }
+		std::vector<std::string> getStyleList();
 	};
 }

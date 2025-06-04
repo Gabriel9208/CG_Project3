@@ -64,4 +64,15 @@ namespace CG
 		tp.update(&styles[nameIdxMap[styleName]]);
 	}
 
+	std::vector<std::string> Gallery::getStyleList()
+	{
+		std::vector<std::string> v;
+		for (auto itr = nameIdxMap.begin(); itr != nameIdxMap.end(); itr++)
+		{
+			v.emplace_back(itr->first);
+		}
+
+		return v;
+	}
+
 }

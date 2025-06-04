@@ -9,6 +9,7 @@
 #include "../Texture/FacePicker.h"
 #include "../Texture/TexturePainter.h"
 #include "../Texture/Gallery.h"
+#include "../Graphic/Material/TextureManager.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -41,10 +42,8 @@ namespace CG {
         }
 
         init(window, _scene);
-        textureList[0] = "Sky";
         textureSelectedIdx = 0;
 
-        styleList[0] = "Default";
         styleSelectedIdx = 0;
     }
 
@@ -162,27 +161,30 @@ namespace CG {
     {
         ImGui::SeparatorText("Choose texture to apply.");
 
-        const char* combo_preview_value = styleList[styleSelectedIdx];
+        Gallery& glry = Gallery::getInstance();
+        std::vector<std::string> sList = glry.getStyleList();
 
-        if (ImGui::BeginCombo("Select Texture", combo_preview_value))
-        {
-            Gallery& glry = Gallery::getInstance();
-            for (int n = 0; n < IM_ARRAYSIZE(textureList); n++)
-            {
-                const bool is_selected = (styleSelectedIdx == n);
-                if (ImGui::Selectable(styleList[n], is_selected))
-                {
-                    styleSelectedIdx = n;
-                    glry.renderStyle(std::string(styleList[styleSelectedIdx]));
-                }
+        std::vector<const char*> styleList;
 
-                if (is_selected)
-                {
-                    ImGui::SetItemDefaultFocus();
-                }
-            }
-            ImGui::EndCombo();
+        for (const auto& str : sList) {
+            styleList.push_back(str.c_str());
         }
+
+        ImGui::PushItemWidth(-1);  // Make ListBox fill available width
+
+        if (ImGui::ListBox("##StyleList",
+            &styleSelectedIdx,
+            styleList.data(),
+            (int)(styleList.size()),
+            (int)(styleList.size())))
+        {
+            if (styleList.size() > styleSelectedIdx)
+            {
+                glry.renderStyle(std::string(styleList[styleSelectedIdx]));
+            }
+        }
+        ImGui::PopItemWidth();
+        
     }
 
     void GUI::pickerPanel()
@@ -197,27 +199,34 @@ namespace CG {
             fp.setRange(range);
         }
     }
+
     void GUI::texturePanel()
     {
         ImGui::SeparatorText("Choose texture to apply.");
         
-        const char* combo_preview_value = textureList[textureSelectedIdx];
+        TextureManager& tmg = TextureManager::getInstance();
+        std::vector<const char*> textureList;
+        std::vector<std::string> tList = tmg.getTextureList();
 
-        if (ImGui::BeginCombo("Select Texture", combo_preview_value))
-        {
-            for (int n = 0; n < IM_ARRAYSIZE(textureList); n++)
-            {
-                const bool is_selected = (textureSelectedIdx == n);
-                if (ImGui::Selectable(textureList[n], is_selected))
-                    textureSelectedIdx = n;
-
-                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                if (is_selected)
-                    ImGui::SetItemDefaultFocus();
-            }
-            ImGui::EndCombo();
+        for (const auto& str : tList) {
+            textureList.push_back(str.c_str());
         }
 
+        ImGui::PushItemWidth(-1);  // Make ListBox fill available width
+
+        if (ImGui::ListBox("##TextureList",
+            &textureSelectedIdx,
+            textureList.data(),
+            (int)(textureList.size()),
+            (int)(textureList.size())))
+        {
+            if (textureList.size() > textureSelectedIdx)
+            {
+                currentTexture = std::string(textureList[textureSelectedIdx]);
+            }
+        }
+        ImGui::PopItemWidth();
+        
         ImGui::SeparatorText("Transform");
 
         FacePicker& fp = FacePicker::getInstance();
