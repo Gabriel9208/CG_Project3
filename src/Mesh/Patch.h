@@ -41,5 +41,4 @@ namespace CG
 		inline std::vector<OpenMesh::HalfedgeHandle>& getOrderedBoundaryEdges() { return orderedBoundaryEdges; }
 		inline std::set<OpenMesh::VertexHandle>& getVertices() { return vertices; }
 	};
-
 }
