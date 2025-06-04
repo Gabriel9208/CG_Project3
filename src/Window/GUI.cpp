@@ -159,7 +159,7 @@ namespace CG {
 
     void GUI::galleryPanel()
     {
-        ImGui::SeparatorText("Choose texture to apply.");
+        ImGui::SeparatorText("Choose style to apply.");
 
         Gallery& glry = Gallery::getInstance();
         std::vector<std::string> sList = glry.getStyleList();
