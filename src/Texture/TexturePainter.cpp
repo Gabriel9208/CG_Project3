@@ -148,7 +148,6 @@ namespace CG
 						currentTextureData.faceNormals.push_back(normal);
 					}
 				}
-				//===================
 			}
 
 			TextureManager& tmg = TextureManager::getInstance();
