@@ -101,6 +101,16 @@ namespace CG
 				{
 					camera->flatTranslate(0, -transSpeed);
 				}
+				if (key == GLFW_KEY_ENTER) 
+				{
+					TexturePainter& tp = TexturePainter::getInstance();
+					tp.save();
+				}
+				if (key == GLFW_KEY_BACKSPACE)
+				{
+					TexturePainter& tp = TexturePainter::getInstance();
+					tp.clearSaveTextureDatas();
+				}
 			}
 		}
 	}
@@ -205,6 +215,7 @@ namespace CG
 		tmg.registerTexture("../../res/texture/test2.jpg", "B");
 		tmg.registerTexture("../../res/texture/wool.jpg", "Wool");
 		tmg.registerTexture("../../res/texture/wool2.jpg", "Wool2");
+		tmg.registerTexture("../../res/texture/elf.png", "Elf");
 
 		TexturePainter& tp = TexturePainter::getInstance();
 		tp.init(display_w, display_h);
