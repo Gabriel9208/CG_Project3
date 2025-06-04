@@ -91,6 +91,9 @@ namespace CG
 		for (auto faceId = pickedFaces.begin(); faceId != pickedFaces.end(); faceId++)
 		{
 			OpenMesh::FaceHandle fh = mesh->face_handle(*faceId);
+
+			if (!mesh->is_valid_handle(fh)) continue;
+
 			for (MyMesh::FaceEdgeIter fe_itr = mesh->fe_iter(fh); fe_itr.is_valid(); fe_itr++)
 			{
 				OpenMesh::EdgeHandle eh = *fe_itr;
@@ -117,6 +120,9 @@ namespace CG
 		for (auto faceId = pickedFaces.begin(); faceId != pickedFaces.end(); faceId++) 
 		{
 			OpenMesh::FaceHandle fh = mesh->face_handle(*faceId);
+
+			if (!mesh->is_valid_handle(fh)) continue;
+
 			for (MyMesh::FaceEdgeIter fe_itr = mesh->fe_iter(fh); fe_itr.is_valid(); fe_itr++)
 			{
 				OpenMesh::EdgeHandle eh = *fe_itr;

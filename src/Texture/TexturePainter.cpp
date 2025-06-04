@@ -205,7 +205,7 @@ namespace CG
 		{
 			OpenMesh::FaceHandle fh = referenceMesh->face_handle(*faceId);
 
-			if (!mesh->is_valid_handle(fh)) continue;
+			if (!referenceMesh->is_valid_handle(fh)) continue;
 
 			std::vector<OpenMesh::VertexHandle> vhandles;
 

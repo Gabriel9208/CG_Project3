@@ -61,6 +61,9 @@ namespace CG
 			OpenMesh::FaceHandle fh0 = referenceMesh->face_handle(heh0);
 			OpenMesh::FaceHandle fh1 = referenceMesh->face_handle(heh1);
 
+			if (!referenceMesh->is_valid_handle(fh0)) continue;
+			if (!referenceMesh->is_valid_handle(fh1)) continue;
+
 			if (heh0.is_valid() && heh1.is_valid())
 			{
 				if (((faces.find(referenceMesh->face_handle(heh0)) != faces.end() &&
