@@ -85,7 +85,7 @@ namespace CG
 						app->getConvexWindow()->updateGraph();
 
 						TexturePainter& tp = TexturePainter::getInstance();
-						tp.update(app->getMainScene()->getMesh());
+						tp.update(std::string(app->getGUIChoosedTexture()), app->getMainScene()->getMesh());
 					}
 					else
 					{
