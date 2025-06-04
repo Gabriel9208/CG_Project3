@@ -152,9 +152,8 @@
     <ClCompile Include="..\src\Graphic\EBO.cpp" />
     <ClCompile Include="..\src\Graphic\FBO.cpp" />
     <ClCompile Include="..\src\Graphic\Material\ColorTexture.cpp" />
-    <ClCompile Include="..\src\Graphic\Material\Material.cpp" />
-    <ClCompile Include="..\src\Graphic\Material\MaterialManager.cpp" />
     <ClCompile Include="..\src\Graphic\Material\Texture.cpp" />
+    <ClCompile Include="..\src\Graphic\Material\TextureManager.cpp" />
     <ClCompile Include="..\src\Graphic\Material\UnsignedIntTexture.cpp" />
     <ClCompile Include="..\src\Graphic\ShaderProgram\ComputeShader.cpp" />
     <ClCompile Include="..\src\Graphic\ShaderProgram\GraphicShader.cpp" />
@@ -186,9 +185,8 @@
     <ClInclude Include="..\src\Graphic\EBO.h" />
     <ClInclude Include="..\src\Graphic\FBO.h" />
     <ClInclude Include="..\src\Graphic\Material\ColorTexture.h" />
-    <ClInclude Include="..\src\Graphic\Material\Material.h" />
-    <ClInclude Include="..\src\Graphic\Material\MaterialManager.h" />
     <ClInclude Include="..\src\Graphic\Material\Texture.h" />
+    <ClInclude Include="..\src\Graphic\Material\TextureManager.h" />
     <ClInclude Include="..\src\Graphic\Material\UnsignedIntTexture.h" />
     <ClInclude Include="..\src\Graphic\ShaderProgram\ComputeShader.h" />
     <ClInclude Include="..\src\Graphic\ShaderProgram\GraphicShader.h" />

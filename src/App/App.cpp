@@ -11,6 +11,7 @@
 #include "../Texture/TextureMapper.h"
 #include "../Texture/TexturePainter.h"
 #include "../Texture/Gallery.h"
+#include "../Graphic/Material/TextureManager.h"
 
 namespace CG
 {
@@ -198,7 +199,11 @@ namespace CG
 		}
 
 		GLInit();
-		
+		TextureManager& tmg = TextureManager::getInstance();
+		tmg.init();
+		tmg.registerTexture("../../res/texture/test.jpg", "Sky");
+		tmg.registerTexture("../../res/texture/test2.jpg", "B");
+
 		TexturePainter& tp = TexturePainter::getInstance();
 		tp.init(display_w, display_h);
 
@@ -261,7 +266,7 @@ namespace CG
 						app->convexWindow->updateGraph();
 
 						TexturePainter& tp = TexturePainter::getInstance();
-						tp.update(mainScene->getMesh());
+						tp.update(std::string(app->getGUIChoosedTexture()), mainScene->getMesh());
 					}
 					if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS)
 					{

@@ -4,7 +4,6 @@
 #include "../Graphic/UBO.h"
 #include "../Graphic/ShaderProgram/GraphicShader.h"
 #include "../Graphic/FBO.h"
-#include "../Graphic/Material/Texture.h"
 #include "../Mesh/MyMesh.h"
 #include "Gallery.h"
 
@@ -30,7 +29,6 @@ namespace CG
 		GLuint tMatKaID;
 		GLuint tMatKdID;
 		GLuint tMatKsID;
-		Texture* texture;
 		GLuint baseTexture;
 		GLuint decalFBO;
 
@@ -42,8 +40,10 @@ namespace CG
 
 		std::vector<glm::vec2> uvCoords;
 		std::vector<unsigned int> heIdx;
-
-		unsigned int drawCount;
+		
+		// for rendering style, multiple texture
+		std::vector<unsigned int> drawCount;
+		std::vector<std::string> textureName;
 
 		TexturePainter();
 		~TexturePainter(){}
@@ -53,7 +53,7 @@ namespace CG
 		static TexturePainter& getInstance();
 
 		void init(int display_w, int display_h);
-		void update(MyMesh* mesh); // directly take data from texture mapper and face picker
+		void update(std::string _textureName, MyMesh* mesh); // directly take data from texture mapper and face picker
 		void update(Style* style);
 		void updateUV();
 

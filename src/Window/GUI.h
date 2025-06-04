@@ -33,12 +33,11 @@ namespace CG {
 		void texturePanel();
 
 		// gallery panel variables
-		const char* styleList[1];
 		int styleSelectedIdx;
 
 		// texture panel variables
+		std::string currentTexture = "Sky";
 		char styleName[128] = "Default";
-		const char* textureList[1];
 		int textureSelectedIdx;
 
 		void _render();
@@ -60,5 +59,7 @@ namespace CG {
 			const glm::mat4& viewMatrix,
 			const glm::mat4& projectionMatrix,
 			unsigned int emitter = -1);
+
+		inline std::string getCurrentTexture() { return currentTexture; }
 	};
 }

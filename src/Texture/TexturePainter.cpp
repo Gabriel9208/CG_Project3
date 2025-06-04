@@ -2,6 +2,7 @@
 #include "FacePicker.h"
 #include "TextureMapper.h"
 #include "../Utilty/Error.h"
+#include "../Graphic/Material/TextureManager.h"
 
 namespace CG
 {
@@ -18,7 +19,6 @@ namespace CG
 		tMatKaID(-1),
 		tMatKdID(-1),
 		tMatKsID(-1),
-		texture(nullptr),
 		model(glm::mat4(1.0)),
 		colorAmbient(glm::vec3(1, 1, 1)),
 		colorDiffuse(glm::vec3(1.0, 1.0, 1.0)),
@@ -47,7 +47,6 @@ namespace CG
 		tVBOn = new VBO<glm::vec3>;
 		tVBOu = new VBO<glm::vec2>;
 		tUBO = new UBO();
-		texture = new Texture();
 
 
 		ShaderInfo shadersTexture[] = {
@@ -59,8 +58,6 @@ namespace CG
 		program->use();
 
 		tVAO->bind();
-
-		texture->LoadTexture("../../res/texture/test.jpg");
 
 		tModelID = glGetUniformLocation(program->getId(), "Model");
 		tMatKaID = glGetUniformLocation(program->getId(), "Material.Ka");
@@ -96,11 +93,15 @@ namespace CG
 		std::vector<glm::vec3> positions;
 		uvCoords.clear();
 		heIdx.clear();
+		drawCount.clear();
+		textureName.clear();
 		std::vector<glm::vec3> faceNormals;
+
+		unsigned int accumulatePointCounts = 0;
 
 		for (auto appearance = style->appearances.begin(); appearance != style->appearances.end(); appearance++)
 		{
-
+			textureName.emplace_back(appearance->textureName);
 			for (auto idx = 0; idx < appearance->faceIDs.size(); idx++)
 			{
 				unsigned int uvIdx = 0;
@@ -147,6 +148,11 @@ namespace CG
 				}
 				//===================
 			}
+
+			TextureManager& tmg = TextureManager::getInstance();
+
+			drawCount.emplace_back(positions.size());
+			accumulatePointCounts += positions.size();
 		}
 
 		if (positions.size() > 0)
@@ -170,23 +176,15 @@ namespace CG
 			GLCall(glEnableVertexAttribArray(2));
 			tVBOu->unbind();
 
-			program->use();
-			texture->bind();
-			GLCall(glUniform1i(glGetUniformLocation(program->getId(), "Texture"), 0));
-			glBindTexture(GL_TEXTURE_2D, texture->getId());
-			program->unUse();
-
 			tVAO->unbind();
 
 			//glBindFramebuffer(GL_FRAMEBUFFER, decalFBO);
 
 			//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
-
-		drawCount = positions.size();
 	}
 
-	void TexturePainter::update(MyMesh* mesh)
+	void TexturePainter::update(std::string _textureName, MyMesh* mesh)
 	{
 		referenceMesh = mesh;
 		TextureMapper& tm = TextureMapper::getInstance();
@@ -196,8 +194,11 @@ namespace CG
 		std::vector<glm::vec3> positions;
 		uvCoords.clear();
 		heIdx.clear();
+		drawCount.clear();
+		textureName.clear();
 		std::vector<glm::vec3> faceNormals;
 
+		textureName.push_back(_textureName);
 		const auto& uvMap = tm.getAllUVMap();
 
 		for (auto faceId = pickedFaces.begin(); faceId != pickedFaces.end(); ++faceId)
@@ -267,13 +268,6 @@ namespace CG
 			GLCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0));
 			GLCall(glEnableVertexAttribArray(2));
 			tVBOu->unbind();
-
-			program->use();
-			texture->bind();
-			GLCall(glUniform1i(glGetUniformLocation(program->getId(), "Texture"), 0));
-			glBindTexture(GL_TEXTURE_2D, texture->getId());
-			program->unUse();
-
 			tVAO->unbind();
 
 			//glBindFramebuffer(GL_FRAMEBUFFER, decalFBO);
@@ -281,7 +275,7 @@ namespace CG
 			//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
 
-		drawCount = positions.size();
+		drawCount.emplace_back(positions.size());
 	}
 
 	// only update uv
@@ -315,7 +309,6 @@ namespace CG
 
 			if (vhandles.size() == 3)
 			{
-
 				for (int i = 0; i < 3; ++i)
 				{
 					auto vh = vhandles[i];
@@ -356,14 +349,16 @@ namespace CG
 		tUBO->fillInData(0, sizeof(glm::mat4), &view);
 		tUBO->fillInData(sizeof(glm::mat4), sizeof(glm::mat4), &proj);
 
-		texture->bind();
-
 		glEnable(GL_POLYGON_OFFSET_FILL);
 		glPolygonOffset(-1.0f, -1.0f);
 
-		// Draw texture mesh
-		GLCall(glDrawArrays(GL_TRIANGLES, 0, drawCount));
-
+		TextureManager& tmg = TextureManager::getInstance();
+		for (int i = 0; i < drawCount.size(); i++)
+		{
+			tmg.use(program->getId(), "Texture", textureName[i]);
+			GLCall(glDrawArrays(GL_TRIANGLES, 0, drawCount[i]));
+		}
+		
 		glDisable(GL_POLYGON_OFFSET_FILL);
 	}
 }
