@@ -33,7 +33,7 @@ namespace CG
 
 		bool LoadFromFile(std::string filename, int display_w, int display_h);
 
-		void Render(const glm::mat4 proj, const glm::mat4 view);
+		void Render(const glm::mat4 proj, const glm::mat4 view, int mode);
 
 		void setWVBOcSubData(unsigned int offset, unsigned int count, std::vector<glm::vec3>* data);
 		void resizeTextureRBO(unsigned int w, unsigned int h);

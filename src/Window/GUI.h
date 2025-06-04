@@ -41,6 +41,7 @@ namespace CG {
 		int textureSelectedIdx;
 
 		void _render();
+		int mode = 0;
 
 	public:
 		GUI(GLFWwindow* window, MainScene* _scene);
@@ -61,5 +62,6 @@ namespace CG {
 			unsigned int emitter = -1);
 
 		inline std::string getCurrentTexture() { return currentTexture; }
+		inline int getMode() { return mode; }
 	};
 }

@@ -109,8 +109,11 @@ namespace CG {
         {
             if (ImGui::BeginTabItem("Gallery"))
             { // sets of textured model
-
+                mode = 0;
                 galleryPanel();
+
+                importPanel();
+                exportPanel();
                 ImGui::EndTabItem();
             }
 
@@ -125,6 +128,8 @@ namespace CG {
                     pickerPanel();
                 }
                 */
+
+                mode = 1;
                 pickerPanel();
                 ImGui::EndTabItem();
             }
@@ -134,21 +139,44 @@ namespace CG {
                 // load texture
                 // modify texture on the faces (translation, rotation and scaling)
 
+                mode = 2;
                 texturePanel();
                 ImGui::EndTabItem();
             }
-
-            if (ImGui::BeginTabItem("Export Station"))
-            {
-                // export to file
-                // add to gallery
-                ImGui::EndTabItem();
-            }            
             
             ImGui::EndTabBar();
         }
         
         ImGui::End();
+    }
+
+    void GUI::exportPanel()
+    {
+        ImGui::SeparatorText("Export style");
+        ImGui::Text("This will overwrite the whole file.");
+
+        ImGui::InputTextWithHint(" ", "ex. export.style", outFileName, IM_ARRAYSIZE(outFileName));
+        ImGui::Text("");
+
+        if (ImGui::Button("Export")) {
+            Gallery& glry = Gallery::getInstance();
+            std::vector<std::string> sList = glry.getStyleList();
+            glry.exportToFile(sList[styleSelectedIdx], outFileName);
+        }
+        
+    }
+
+    void GUI::importPanel()
+    {
+        ImGui::SeparatorText("Import style");
+
+        ImGui::InputTextWithHint("  ", "ex. import.style", inFileName, IM_ARRAYSIZE(inFileName));
+        ImGui::Text("");
+
+        if (ImGui::Button("Import")) {
+            Gallery& glry = Gallery::getInstance();
+            glry.importFromFile(inFileName);
+        }
     }
 
     void GUI::_render()
@@ -275,7 +303,7 @@ namespace CG {
         }
         ImGui::TextWrapped("");
         ImGui::InputText("Style Name", styleName, IM_ARRAYSIZE(styleName));
-        if (ImGui::Button("Save Texture Settings"))
+        if (ImGui::Button("Save to temp gallery."))
         {
             if (!glry.findStyle(std::string(styleName)))
             {

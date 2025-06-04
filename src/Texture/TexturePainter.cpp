@@ -28,7 +28,7 @@ namespace CG
 	{
 	}
 
-	void TexturePainter::init(int display_w, int display_h)
+	void TexturePainter::init(int display_w, int display_h, MyMesh* mesh)
 	{
 		glGenTextures(1, &baseTexture);
 		glBindTexture(GL_TEXTURE_2D, baseTexture);
@@ -78,6 +78,8 @@ namespace CG
 		tUBO->associateWithShaderBlock(program->getId(), "MatVP", 0);
 
 		tVAO->unbind();
+
+		referenceMesh = mesh;
 	}
 
 	TexturePainter& TexturePainter::getInstance()

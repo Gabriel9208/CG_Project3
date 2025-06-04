@@ -51,8 +51,7 @@ namespace CG
 
 	public:
 		static TexturePainter& getInstance();
-
-		void init(int display_w, int display_h);
+		void init(int display_w, int display_h, MyMesh* mesh);
 		void update(std::string _textureName, MyMesh* mesh); // directly take data from texture mapper and face picker
 		void update(Style* style);
 		void updateUV();

@@ -26,7 +26,7 @@ namespace CG
 		~MainScene();
 
 		bool Initialize(int display_w, int display_h);
-		void Render(double timeNow, double timeDelta, int display_w, int display_h);
+		void Render(double timeNow, double timeDelta, int display_w, int display_h, int mode);
 
 		inline Camera& getCamera() { return camera; }
 		inline GLuint getFaceIDTextureID() const { return mesh->getFboColor(); }

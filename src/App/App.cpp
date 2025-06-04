@@ -189,10 +189,10 @@ namespace CG
 		tmg.registerTexture("../../res/texture/test2.jpg", "B");
 
 		TexturePainter& tp = TexturePainter::getInstance();
-		tp.init(display_w, display_h);
 
 		mainScene = new MainScene();
 		mainScene->Initialize(display_w, display_h);
+		tp.init(display_w, display_h, mainScene->getMesh());
 
 		patch = new Patch(mainScene->getMesh());
 		convexWindow = new ConvexWindow(mainScene->getMesh(), display_w, display_h);
@@ -342,7 +342,7 @@ namespace CG
 		glfwGetFramebufferSize(mainWindow, &display_w, &display_h);
 		glViewport(0, 0, display_w, display_h);
 
-		mainScene->Render(timeNow, timeDelta, display_w, display_h);
+		mainScene->Render(timeNow, timeDelta, display_w, display_h, gui->getMode());
 		convexWindow->Render(display_w, display_h);
 	}
 

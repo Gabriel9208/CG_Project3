@@ -27,7 +27,7 @@ namespace CG
 		return loadScene(display_w, display_h);
 	}
 
-	void MainScene::Render(double timeNow, double timeDelta, int display_w, int display_h)
+	void MainScene::Render(double timeNow, double timeDelta, int display_w, int display_h, int mode)
 	{
 		GLCall(glClearColor(0.0, 0.0, 0.0, 1.0));
 		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
@@ -36,7 +36,7 @@ namespace CG
 
 		GLCall(glFlush());
 
-		mesh->Render(*camera.GetProjectionMatrix(), *camera.GetViewMatrix());
+		mesh->Render(*camera.GetProjectionMatrix(), *camera.GetViewMatrix(), mode);
 		TexturePainter& tp = TexturePainter::getInstance();
 		tp.render(*camera.GetProjectionMatrix(), *camera.GetViewMatrix());
 	}

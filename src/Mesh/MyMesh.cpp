@@ -51,7 +51,7 @@ namespace CG
 		return isRead;
 	}
 
-	void MyMesh::Render(const glm::mat4 proj, const glm::mat4 view)
+	void MyMesh::Render(const glm::mat4 proj, const glm::mat4 view, int mode)
 	{
 #pragma region Face ID to frame buffer
 		
@@ -96,25 +96,22 @@ namespace CG
 #pragma endregion
 		
 #pragma region Wireframe Rendering
-		programLine.use();
-		wVAO.bind();
+		if (mode != 0)
+		{
+			programLine.use();
+			wVAO.bind();
 
-		GLCall(glUniformMatrix4fv(lModelID, 1, GL_FALSE, &model[0][0]));
+			GLCall(glUniformMatrix4fv(lModelID, 1, GL_FALSE, &model[0][0]));
 
-		// update data to UBO for MVP
-		wUBO.bind();
-		wUBO.fillInData(0, sizeof(glm::mat4), &view);
-		wUBO.fillInData(sizeof(glm::mat4), sizeof(glm::mat4), &proj);
+			// update data to UBO for MVP
+			wUBO.bind();
+			wUBO.fillInData(0, sizeof(glm::mat4), &view);
+			wUBO.fillInData(sizeof(glm::mat4), sizeof(glm::mat4), &proj);
 
-		GLCall(glLineWidth(1.5f));
-		// Draw wireframe mesh
-		GLCall(glDrawArrays(GL_LINES, 0, this->n_edges() * 2));
-#pragma endregion
-
-#pragma region Texture Rendering
-
-		
-		
+			GLCall(glLineWidth(1.5f));
+			// Draw wireframe mesh
+			GLCall(glDrawArrays(GL_LINES, 0, this->n_edges() * 2));
+		}
 #pragma endregion
 
 		// Unbind shader and VAO

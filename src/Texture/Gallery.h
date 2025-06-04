@@ -42,9 +42,13 @@ namespace CG
 		static Gallery& getInstance();
 
 		void registerStyle(std::string styleName);
+		void registerStyle(Style style);
 		void addAppearance(std::string styleName, const Appearance& app);
 		void enlargeAppearance(std::string styleName, unsigned int app_idx, const Appearance& app);
 		void renderStyle(std::string styleName);
+
+		void importFromFile(std::string inFileName);
+		void exportToFile(std::string styleName, std::string outFileName);
 
 		inline std::vector<Style>& getStyles() { return styles; }
 		inline bool findStyle(std::string name) { return nameIdxMap.find(name) != nameIdxMap.end(); }
