@@ -37,6 +37,7 @@ namespace CG
 
 		void registerToMesh(MyMesh* target);
 		void chooseFace(unsigned int height, double _xpos, double _ypos, glm::mat4 view, glm::mat4 proj, GLuint textureID);
+		void chooseAllFace();
 		void clearPickedFaces();
 		void clearColoredEdge(MyMesh::EdgeHandle eh);
 		void setRange(unsigned int _range);

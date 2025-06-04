@@ -204,6 +204,8 @@ namespace CG
 		{
 			OpenMesh::FaceHandle fh = referenceMesh->face_handle(*faceId);
 
+			if (!mesh->is_valid_handle(fh)) continue;
+
 			std::vector<OpenMesh::VertexHandle> vhandles;
 
 			for (MyMesh::FaceHalfedgeIter fh_it = referenceMesh->fh_iter(fh); fh_it.is_valid(); fh_it++)
@@ -296,6 +298,8 @@ namespace CG
 		for (auto faceId = pickedFaces.begin(); faceId != pickedFaces.end(); ++faceId)
 		{
 			OpenMesh::FaceHandle fh = referenceMesh->face_handle(*faceId);
+
+			if (!referenceMesh->is_valid_handle(fh)) continue;
 
 			std::vector<OpenMesh::VertexHandle> vhandles;
 
