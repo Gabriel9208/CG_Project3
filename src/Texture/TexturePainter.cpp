@@ -289,9 +289,10 @@ namespace CG
 		tUBO->fillInData(0, sizeof(glm::mat4), &view);
 		tUBO->fillInData(sizeof(glm::mat4), sizeof(glm::mat4), &proj);
 
-		glDisable(GL_DEPTH_TEST);
+		//glDisable(GL_DEPTH_TEST);
+		glDepthMask(GL_FALSE);
 		glEnable(GL_POLYGON_OFFSET_FILL);
-		glPolygonOffset(-1.0f, -1.0f);
+		glPolygonOffset(-1.5f, -1.5f);
 
 		TextureManager& tmg = TextureManager::getInstance();
 		
@@ -345,6 +346,7 @@ namespace CG
 		}
 		
 		glDisable(GL_POLYGON_OFFSET_FILL);
+		glDepthMask(GL_TRUE);
 	}
 
 	void TexturePainter::clearSaveTextureDatas()
