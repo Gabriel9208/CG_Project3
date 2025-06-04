@@ -8,6 +8,22 @@
 
 namespace CG
 {
+	struct TextureData
+	{
+		std::string textureName;
+		std::vector<glm::vec3> positions;
+		std::vector<glm::vec3> faceNormals;
+		std::vector<glm::vec2> uvCoords;
+
+		void clear()
+		{
+			textureName = "";
+			positions.clear();
+			faceNormals.clear();
+			uvCoords.clear();
+		}
+	};
+
 	struct UVSet
 	{
 		std::vector<unsigned int> heIDs; // half edge
@@ -24,7 +40,7 @@ namespace CG
 	struct Style
 	{
 		std::string name;
-		std::vector<Appearance> appearances;
+		std::vector<TextureData> saveTextureDatas;
 	};
 
 	class Gallery
@@ -43,8 +59,8 @@ namespace CG
 
 		void registerStyle(std::string styleName);
 		void registerStyle(Style style);
-		void addAppearance(std::string styleName, const Appearance& app);
-		void enlargeAppearance(std::string styleName, unsigned int app_idx, const Appearance& app);
+		void updataSaveTextureDatas(std::string styleName, const std::vector<TextureData>& tds);
+		//void enlargeAppearance(std::string styleName, unsigned int app_idx, const Appearance& app);
 		void renderStyle(std::string styleName);
 
 		void importFromFile(std::string inFileName);

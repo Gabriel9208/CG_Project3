@@ -54,27 +54,17 @@ namespace CG
 		}
 	}
 
-	void Gallery::addAppearance(std::string styleName, const Appearance& app)
+	void Gallery::updataSaveTextureDatas(std::string styleName, const std::vector<TextureData>& tds)
 	{
 		if (nameIdxMap.find(styleName) == nameIdxMap.end())
 		{
 			return;
 		}
 
-		// check if have the same texture name in all the appearance under this style
-		for (int i = 0; i < styles[nameIdxMap[styleName]].appearances.size(); i++)
-		{
-			if (app.textureName == styles[nameIdxMap[styleName]].appearances[i].textureName)
-			{
-				enlargeAppearance(styleName, i, app);
-				return;
-			}
-		}
-
-		styles[nameIdxMap[styleName]].appearances.emplace_back(app);
+		styles[nameIdxMap[styleName]].saveTextureDatas = tds;
 	}
 
-	void Gallery::enlargeAppearance(std::string styleName, unsigned int app_idx, const Appearance& app)
+	/*void Gallery::enlargeAppearance(std::string styleName, unsigned int app_idx, const Appearance& app)
 	{
 		if (app.UVSets.size() != app.faceIDs.size())
 		{
@@ -88,7 +78,7 @@ namespace CG
 			styles[nameIdxMap[styleName]].appearances[app_idx].faceIDs.emplace_back(app.faceIDs[i]);
 
 		}
-	}
+	}*/
 
 	void Gallery::renderStyle(std::string styleName)
 	{
@@ -126,14 +116,14 @@ namespace CG
 					break;
 				}
 
-				if (line.find("Appearance") == std::string::npos)
+				if (line.find("TextureData") == std::string::npos)
 				{
-					std::cout << "Reading style file error: " << "Wrong format, missing keyword \"Appearance\".\n";
+					std::cout << "Reading style file error: " << "Wrong format, missing keyword \"TextureData\".\n";
 					return;
 				}
-				style.appearances.emplace_back();
+				style.saveTextureDatas.emplace_back();
 
-				int currentAppearanceIdx = style.appearances.size() - 1;
+				int currentAppearanceIdx = style.saveTextureDatas.size() - 1;
 
 				std::getline(inFile, line);
 				if (line.find("Texture") == std::string::npos)
@@ -142,7 +132,7 @@ namespace CG
 					return;
 				}
 				std::getline(inFile, line);
-				style.appearances[currentAppearanceIdx].textureName = strip(line);
+				style.saveTextureDatas[currentAppearanceIdx].textureName = strip(line);
 
 				std::getline(inFile, line);
 				if (line.find("-Texture") == std::string::npos)
@@ -153,83 +143,68 @@ namespace CG
 
 				while (std::getline(inFile, line))
 				{
-					if (line.find("-Appearance") != std::string::npos)
+					if (line.find("-TextureData") != std::string::npos)
 					{
 						break;
 					}
 
-					if (line.find("FaceID") == std::string::npos)
+					if (line.find("Position") == std::string::npos)
 					{
-						std::cout << "Reading style file error: " << "Wrong format, missing keyword \"FaceID\".\n";
+						std::cout << "Reading style file error: " << "Wrong format, missing keyword \"Position\".\n";
 						return;
 					}
 
-					std::set<unsigned int> faceid;
 					while (std::getline(inFile, line))
 					{
-						if (line.find("-FaceID") != std::string::npos)
+						if (line.find("-Position") != std::string::npos)
 						{
 							break;
 						}
 
-						faceid.insert(std::stoul(strip(line)));
-					}
-					style.appearances[currentAppearanceIdx].faceIDs.emplace_back(faceid);
-
-					std::getline(inFile, line);
-					if (line.find("UVSet") == std::string::npos)
-					{
-						std::cout << "Reading style file error: " << "Wrong format, missing keyword \"UVSet\".\n";
-						return;
-					}
-
-					UVSet uvs;
-					std::vector<unsigned int> heid;
-					std::vector<OpenMesh::Vec2d> uvCoord;
-
-					std::getline(inFile, line);
-					if (line.find("HEId") == std::string::npos)
-					{
-						std::cout << "Reading style file error: " << "Wrong format, missing keyword \"HEId\".\n";
-						return;
-					}
-					while (std::getline(inFile, line))
-					{
-						if (line.find("-HEId") != std::string::npos)
-						{
-							break;
-						}
-
-						heid.push_back(std::stoul(strip(line)));
-					}
-
-					std::getline(inFile, line);
-					if (line.find("UV") == std::string::npos)
-					{
-						std::cout << "Reading style file error: " << "Wrong format, missing keyword \"HEId\".\n";
-						return;
-					}
-					while (std::getline(inFile, line))
-					{
-						if (line.find("-UV") != std::string::npos)
-						{
-							break;
-						}
 						std::stringstream ss(strip(line));
-						double x, y;
-						ss >> x >> y;
-						uvCoord.push_back(OpenMesh::Vec2d(x, y));
+						float x, y, z;
+						ss >> x >> y >> z;
+						style.saveTextureDatas[currentAppearanceIdx].positions.push_back({x, y, z});
 					}
 
-					uvs.heIDs = heid;
-					uvs.UVs = uvCoord;
-					style.appearances[currentAppearanceIdx].UVSets.emplace_back(uvs);
+					std::getline(inFile, line);
+					if (line.find("FaceNormals") == std::string::npos)
+					{
+						std::cout << "Reading style file error: " << "Wrong format, missing keyword \"FaceNormals\".\n";
+						return;
+					}
+
+					while (std::getline(inFile, line))
+					{
+						if (line.find("-FaceNormals") != std::string::npos)
+						{
+							break;
+						}
+
+						std::stringstream ss(strip(line));
+						float x, y, z;
+						ss >> x >> y >> z;
+						style.saveTextureDatas[currentAppearanceIdx].faceNormals.push_back({ x, y, z });
+					}
 
 					std::getline(inFile, line);
-					if (line.find("-UVSet") == std::string::npos)
+					if (line.find("UVCoords") == std::string::npos)
 					{
-						std::cout << "Reading style file error: " << "Wrong format, missing keyword \"-UVSet\".\n";
+						std::cout << "Reading style file error: " << "Wrong format, missing keyword \"UVCoords\".\n";
 						return;
+					}
+
+					while (std::getline(inFile, line))
+					{
+						if (line.find("-UVCoords") != std::string::npos)
+						{
+							break;
+						}
+
+						std::stringstream ss(strip(line));
+						float x, y;
+						ss >> x >> y;
+						style.saveTextureDatas[currentAppearanceIdx].uvCoords.push_back({ x, y });
 					}
 				}				
 
@@ -247,40 +222,35 @@ namespace CG
 		outFile << "	" << style.name << "\n";
 		outFile << "-Name\n";
 
-		for (auto app = style.appearances.begin(); app != style.appearances.end(); app++)
+		for (auto app = style.saveTextureDatas.begin(); app != style.saveTextureDatas.end(); app++)
 		{
-			outFile << "Appearance\n";
+			outFile << "TextureData\n";
 			outFile << "	" << "Texture\n";
 			outFile << "	" << "	" << app->textureName << "\n";
 			outFile << "	" << "-Texture\n";
 
-			for (unsigned int setCount = 0; setCount < app->UVSets.size(); setCount++)
+			outFile << "	" << "Position\n";
+			for (int i = 0; i < app->positions.size(); i++)
 			{
-				outFile << "	" << "FaceID\n";
-				for (auto id = app->faceIDs[setCount].begin(); id != app->faceIDs[setCount].end(); id++)
-				{
-					outFile << "	" << "	" << *id << "\n";
-				}
-				outFile << "	" << "-FaceID\n";
-
-				outFile << "	" << "UVSet\n";
-				outFile << "	" << "	" << "HEId" << "\n";
-				for (auto id = app->UVSets[setCount].heIDs.begin(); id != app->UVSets[setCount].heIDs.end(); id++)
-				{
-					outFile << "	" << "	" << "	" << *id << "\n";
-				}
-				outFile << "	" << "	" << "-HEId" << "\n";
-
-				outFile << "	" << "	" << "UV" << "\n";
-				for (auto id = app->UVSets[setCount].UVs.begin(); id != app->UVSets[setCount].UVs.end(); id++)
-				{
-					outFile << "	" << "	" << "	" << *id << "\n";
-				}
-				outFile << "	" << "	" << "-UV" << "\n";
-				outFile << "	" << "-UVSet\n";
-
+				outFile << "	" << "	" << app->positions[i][0] << " " << app->positions[i][1] << " " << app->positions[i][2] << "\n";
 			}
-			outFile << "-Appearance\n";
+			outFile << "	" << "-Position\n";
+
+			outFile << "	" << "FaceNormals\n";
+			for (int i = 0; i < app->faceNormals.size(); i++)
+			{
+				outFile << "	" << "	" << app->faceNormals[i][0] << " " << app->faceNormals[i][1] << " " << app->faceNormals[i][2] << "\n";
+			}
+			outFile << "	" << "-FaceNormals\n";
+
+			outFile << "	" << "UVCoords\n";
+			for (int i = 0; i < app->uvCoords.size(); i++)
+			{
+				outFile << "	" << "	" << app->uvCoords[i][0] << " " << app->uvCoords[i][1] << "\n";
+			}
+			outFile << "	" << "-UVCoords\n";
+
+			outFile << "-TextureData\n";
 
 		}
 		outFile.close();

@@ -11,21 +11,6 @@
 
 namespace CG
 {
-	struct TextureData
-	{
-		std::string textureName;
-		std::vector<glm::vec3> positions;
-		std::vector<glm::vec3> faceNormals;
-		std::vector<glm::vec2> uvCoords;
-
-		void clear() 
-		{
-			textureName = "";
-			positions.clear();
-			faceNormals.clear();
-			uvCoords.clear();
-		}
-	};
 
 	class TexturePainter
 	{
@@ -81,5 +66,6 @@ namespace CG
 		void render(const glm::mat4 proj, const glm::mat4 view);
 		inline std::vector<glm::vec2>& getUVCoords() { return currentTextureData.uvCoords; }
 		inline std::vector<unsigned int> getHeIdx() { return heIdx; }
+		inline std::vector<TextureData>& getSaveTextureDatas() { return saveTextureDatas; }
 	};
 }
