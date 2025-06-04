@@ -216,6 +216,10 @@ namespace CG
 		tmg.registerTexture("../../res/texture/wool.jpg", "Wool");
 		tmg.registerTexture("../../res/texture/wool2.jpg", "Wool2");
 		tmg.registerTexture("../../res/texture/elf.png", "Elf");
+		tmg.registerTexture("../../res/texture/Red.jpg", "Red");
+		tmg.registerTexture("../../res/texture/Blue.jpg", "Blue");
+		tmg.registerTexture("../../res/texture/Green.jpg", "Green");
+		tmg.registerTexture("../../res/texture/Complexion.jpg", "Complexion");
 
 		TexturePainter& tp = TexturePainter::getInstance();
 
