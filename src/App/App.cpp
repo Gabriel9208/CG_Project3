@@ -259,10 +259,10 @@ namespace CG
 
 						if (!(mods & GLFW_MOD_SHIFT) && mouseLeftPressed == false)
 						{
-							fp.clearPickedFaces();
+							fp.clearPickedFaces();						
+							app->patch->clear();
 						}
 
-						app->patch->clear();
 						app->chooseFace(window);
 						mouseLeftPressed = true;
 
