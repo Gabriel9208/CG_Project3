@@ -19,14 +19,10 @@ namespace CG
 		using Color = OpenMesh::Vec3f;
 
 		// Add normal property to vertices and faces
-		VertexAttributes(OpenMesh::Attributes::Normal | OpenMesh::Attributes::TexCoord2D );
+		VertexAttributes(OpenMesh::Attributes::Normal);
 		FaceAttributes(OpenMesh::Attributes::Normal);
 		EdgeAttributes(OpenMesh::Attributes::Color);
-
-		VertexTraits
-		{
-		  double weight;
-		};
+		HalfedgeAttributes(OpenMesh::Attributes::TexCoord2D);
 	};
 
 	class MyMesh : public OpenMesh::TriMesh_ArrayKernelT<MyTraits>
@@ -37,7 +33,7 @@ namespace CG
 
 		bool LoadFromFile(std::string filename, int display_w, int display_h);
 
-		void Render(const glm::mat4 proj, const glm::mat4 view);
+		void Render(const glm::mat4 proj, const glm::mat4 view, int mode);
 
 		void setWVBOcSubData(unsigned int offset, unsigned int count, std::vector<glm::vec3>* data);
 		void resizeTextureRBO(unsigned int w, unsigned int h);
@@ -78,13 +74,6 @@ namespace CG
 		std::vector<glm::vec3> face_vertices_for_id_pass; // 與 face_vertices 內容和順序一致
 		GLenum DrawBuffers[1];
 
-		/* Buffers for texture rendering */
-		VAO tVAO;
-		VBO<glm::vec3> tVBOp;
-		VBO<glm::vec3> tVBOn;
-		VBO<glm::vec2> tVBOu;
-		UBO tUBO;
-
 		/* Buffers for solid rendering */
 		VAO sVAO;
 		VBO<glm::vec3> sVBOp;
@@ -97,16 +86,6 @@ namespace CG
 		VBO<glm::vec3> wVBOn;
 		VBO<glm::vec3> wVBOc; // draw selected edge
 		UBO wUBO;
-
-		/* Texture shader */
-		GraphicShader programTex;
-		GLuint tModelID;
-		GLuint tMatKaID;
-		GLuint tMatKdID;
-		GLuint tMatKsID;
-		Texture texture;
-		GLuint baseTexture;
-		GLuint decalFBO;
 
 		/* Phong shader */
 		GraphicShader programPhong;

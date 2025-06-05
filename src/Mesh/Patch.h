@@ -34,7 +34,6 @@ namespace CG
 
 		void init(MyMesh* mesh, std::set<unsigned int>& faceId);
 		void loadSets(std::set<unsigned int>& faceId);
-		void updateSet(unsigned int faceId);
 		void identifyBoundary();
 		void generateOrderedBoundary();
 		void clear();
@@ -42,5 +41,4 @@ namespace CG
 		inline std::vector<OpenMesh::HalfedgeHandle>& getOrderedBoundaryEdges() { return orderedBoundaryEdges; }
 		inline std::set<OpenMesh::VertexHandle>& getVertices() { return vertices; }
 	};
-
 }

@@ -27,8 +27,21 @@ namespace CG {
 
 		void exportPanel();
 		void importPanel();
+
+		void galleryPanel();
 		void pickerPanel();
+		void texturePanel();
+
+		// gallery panel variables
+		int styleSelectedIdx;
+
+		// texture panel variables
+		std::string currentTexture = "Sky";
+		char styleName[128] = "Default";
+		int textureSelectedIdx;
+
 		void _render();
+		int mode = 0;
 
 	public:
 		GUI(GLFWwindow* window, MainScene* _scene);
@@ -47,5 +60,8 @@ namespace CG {
 			const glm::mat4& viewMatrix,
 			const glm::mat4& projectionMatrix,
 			unsigned int emitter = -1);
+
+		inline std::string getCurrentTexture() { return currentTexture; }
+		inline int getMode() { return mode; }
 	};
 }

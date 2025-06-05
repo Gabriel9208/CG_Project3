@@ -50,12 +50,6 @@
     <ClCompile Include="..\src\Graphic\VAO.cpp">
       <Filter>Graphic</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Graphic\Material\Material.cpp">
-      <Filter>Graphic\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Graphic\Material\MaterialManager.cpp">
-      <Filter>Graphic\Material</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Graphic\Material\Texture.cpp">
       <Filter>Graphic\Material</Filter>
     </ClCompile>
@@ -77,19 +71,28 @@
     <ClCompile Include="..\src\Graphic\Material\UnsignedIntTexture.cpp">
       <Filter>Graphic\Material</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Utilty\FacePicker.cpp">
-      <Filter>Utility</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Mesh\Patch.cpp">
       <Filter>Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Utilty\TextureMapper.cpp">
-      <Filter>Utility</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Window\ConvexWindow.cpp">
       <Filter>Window</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Graphic\Material\ColorTexture.cpp">
+      <Filter>Graphic\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Texture\FacePicker.cpp">
+      <Filter>Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Texture\TextureMapper.cpp">
+      <Filter>Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Texture\TexturePainter.cpp">
+      <Filter>Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Texture\Gallery.cpp">
+      <Filter>Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Graphic\Material\TextureManager.cpp">
       <Filter>Graphic\Material</Filter>
     </ClCompile>
   </ItemGroup>
@@ -126,6 +129,9 @@
     </Filter>
     <Filter Include="Graphic\ShaderProgram">
       <UniqueIdentifier>{510acb12-5b8a-45e2-990c-0a3b5d6130d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Texture">
+      <UniqueIdentifier>{e3d310fb-b6be-4d53-8f03-71122fe577af}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -183,12 +189,6 @@
     <ClInclude Include="..\src\Graphic\VBO.h">
       <Filter>Graphic</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Graphic\Material\Material.h">
-      <Filter>Graphic\Material</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Graphic\Material\MaterialManager.h">
-      <Filter>Graphic\Material</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Graphic\Material\Texture.h">
       <Filter>Graphic\Material</Filter>
     </ClInclude>
@@ -211,19 +211,28 @@
     <ClInclude Include="..\src\Graphic\Material\UnsignedIntTexture.h">
       <Filter>Graphic\Material</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Utilty\FacePicker.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Mesh\Patch.h">
       <Filter>Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Utilty\TextureMapper.h">
-      <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Window\ConvexWindow.h">
       <Filter>Window</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Graphic\Material\ColorTexture.h">
+      <Filter>Graphic\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Texture\FacePicker.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Texture\TextureMapper.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Texture\TexturePainter.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Texture\Gallery.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Graphic\Material\TextureManager.h">
       <Filter>Graphic\Material</Filter>
     </ClInclude>
   </ItemGroup>

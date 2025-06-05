@@ -12,7 +12,7 @@
 #include "Scene/MainScene.h"
 #include "../Scene/Camera.h"
 #include "../Mesh/Patch.h"
-#include "../Utilty/TextureMapper.h"
+#include "../Texture/TextureMapper.h"
 #include "../Window/ConvexWindow.h"
 
 namespace CG
@@ -32,6 +32,8 @@ namespace CG
 
         inline Patch* getPatch() { return patch; }
         inline MainScene* getMainScene() { return mainScene; }
+        inline std::string getGUIChoosedTexture() { return gui->getCurrentTexture(); }
+        inline ConvexWindow* getConvexWindow() { return convexWindow; }
         inline void setWidth(unsigned int w) { width = w; }
         inline void setHeight(unsigned int h) { height = h; }
 

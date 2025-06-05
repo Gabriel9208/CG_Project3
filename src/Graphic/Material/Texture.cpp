@@ -56,12 +56,44 @@ GLuint Texture::LoadTexture(std::string filename)
 	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &channels, 0);
 	if (data)
 	{
-		GLenum format = (channels == 4) ? GL_RGBA : GL_RGB;
-		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data));
+		GLenum format;
+		GLenum internalFormat;
+		
+		// Handle different channel configurations properly
+		switch (channels)
+		{
+		case 1:
+			format = GL_RED;
+			internalFormat = GL_RED;
+			break;
+		case 2:
+			format = GL_RG;
+			internalFormat = GL_RG;
+			break;
+		case 3:
+			format = GL_RGB;
+			internalFormat = GL_RGB;
+			break;
+		case 4:
+			format = GL_RGBA;
+			internalFormat = GL_RGBA;
+			break;
+		default:
+			std::cout << "Unsupported number of channels: " << channels << " for file: " << filename << std::endl;
+			stbi_image_free(data);
+			glDeleteTextures(1, &id);
+			id = 0;
+			return 0;
+		}
+		
+		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data));
 		GLCall(glGenerateMipmap(GL_TEXTURE_2D));
 
 		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
 		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+		
 		stbi_image_free(data);
 	}
 	else

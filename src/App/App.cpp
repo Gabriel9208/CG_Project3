@@ -7,17 +7,20 @@
 #include <imgui_impl_glfw.h>
 
 #include "App.h"
-#include "../Utilty/FacePicker.h"
-#include "../Utilty/TextureMapper.h"
+#include "../Texture/FacePicker.h"
+#include "../Texture/TextureMapper.h"
+#include "../Texture/TexturePainter.h"
+#include "../Texture/Gallery.h"
+#include "../Graphic/Material/TextureManager.h"
 
 namespace CG
 {
 	double lastCursorX;
 	double lastCursorY;
 
-	bool mouseMiddlePressed;
-	bool mouseRightPressed;
-	bool mouseLeftPressed;
+	bool mouseMiddlePressed = false;
+	bool mouseRightPressed = false;
+	bool mouseLeftPressed = false;
 
 
 	static void keyPress(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -37,7 +40,6 @@ namespace CG
 				{
 					if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS) {
 						camera->zoom(-transSpeed);
-
 					}
 					else
 					{
@@ -66,12 +68,28 @@ namespace CG
 				}
 				if (key == GLFW_KEY_A) // camera go left
 				{
-					if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS) {
-						camera->flatTranslate(-transSpeed, 0);
+					if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) 
+					{	
+						camera->rotateAround(-rotatSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+					}
+					else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+					{
+						FacePicker& fp = FacePicker::getInstance();
+						fp.chooseAllFace();
+
+						app->getPatch()->init(app->getMainScene()->getMesh(), fp.getFacesPicked());
+
+						TextureMapper& tm = TextureMapper::getInstance();
+						tm.Map(app->getMainScene()->getMesh(), app->getPatch()->getOrderedBoundaryEdges(), &app->getPatch()->getVertices());
+
+						app->getConvexWindow()->updateGraph();
+
+						TexturePainter& tp = TexturePainter::getInstance();
+						tp.update(std::string(app->getGUIChoosedTexture()), app->getMainScene()->getMesh());
 					}
 					else
 					{
-						camera->rotateAround(-rotatSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+						camera->flatTranslate(-transSpeed, 0);
 
 					}
 				}
@@ -82,6 +100,16 @@ namespace CG
 				if (key == GLFW_KEY_Q) // camera go down
 				{
 					camera->flatTranslate(0, -transSpeed);
+				}
+				if (key == GLFW_KEY_ENTER) 
+				{
+					TexturePainter& tp = TexturePainter::getInstance();
+					tp.save();
+				}
+				if (key == GLFW_KEY_BACKSPACE)
+				{
+					TexturePainter& tp = TexturePainter::getInstance();
+					tp.clearSaveTextureDatas();
 				}
 			}
 		}
@@ -181,9 +209,23 @@ namespace CG
 		}
 
 		GLInit();
-		
+		TextureManager& tmg = TextureManager::getInstance();
+		tmg.init();
+		tmg.registerTexture("../../res/texture/test.jpg", "Sky");
+		tmg.registerTexture("../../res/texture/test2.jpg", "B");
+		tmg.registerTexture("../../res/texture/wool.jpg", "Wool");
+		tmg.registerTexture("../../res/texture/wool2.jpg", "Wool2");
+		tmg.registerTexture("../../res/texture/elf.png", "Elf");
+		tmg.registerTexture("../../res/texture/Red.jpg", "Red");
+		tmg.registerTexture("../../res/texture/Blue.jpg", "Blue");
+		tmg.registerTexture("../../res/texture/Green.jpg", "Green");
+		tmg.registerTexture("../../res/texture/Complexion.jpg", "Complexion");
+
+		TexturePainter& tp = TexturePainter::getInstance();
+
 		mainScene = new MainScene();
 		mainScene->Initialize(display_w, display_h);
+		tp.init(display_w, display_h, mainScene->getMesh());
 
 		patch = new Patch(mainScene->getMesh());
 		convexWindow = new ConvexWindow(mainScene->getMesh(), display_w, display_h);
@@ -219,11 +261,12 @@ namespace CG
 					{
 						FacePicker& fp = FacePicker::getInstance();
 
-						if (!(mods & GLFW_MOD_SHIFT))
-							fp.clearPickedFaces();
+						if (!(mods & GLFW_MOD_SHIFT) && mouseLeftPressed == false)
+						{
+							fp.clearPickedFaces();						
+							app->patch->clear();
+						}
 
-						fp.clearPickedFaces();
-						app->patch->clear();
 						app->chooseFace(window);
 						mouseLeftPressed = true;
 
@@ -238,6 +281,9 @@ namespace CG
 						tm.Map(mainScene->getMesh(), app->patch->getOrderedBoundaryEdges(), &app->patch->getVertices());
 
 						app->convexWindow->updateGraph();
+
+						TexturePainter& tp = TexturePainter::getInstance();
+						tp.update(std::string(app->getGUIChoosedTexture()), mainScene->getMesh());
 					}
 					if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS)
 					{
@@ -292,7 +338,7 @@ namespace CG
 			timeLast = timeNow;
 
 			render();
-
+		
 			gui->render();
 			
 			ImGuiIO& io = ImGui::GetIO();
@@ -329,7 +375,7 @@ namespace CG
 		glfwGetFramebufferSize(mainWindow, &display_w, &display_h);
 		glViewport(0, 0, display_w, display_h);
 
-		mainScene->Render(timeNow, timeDelta, display_w, display_h);
+		mainScene->Render(timeNow, timeDelta, display_w, display_h, gui->getMode());
 		convexWindow->Render(display_w, display_h);
 	}
 
